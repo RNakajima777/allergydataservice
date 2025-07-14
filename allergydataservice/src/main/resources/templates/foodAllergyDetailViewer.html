@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>アレルギー反応詳細</title>
+  <link th:href="@{/webjars/bootstrap/5.0.0-beta3/css/bootstrap.min.css}" rel="stylesheet"/>
+  <script type="text/javascript" th:src="@{/webjars/bootstrap/5.0.0-beta3/js/bootstrap.min.js}"></script>
+  <style>
+    body {
+      background-color: #f4f6f8;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background-color: #ffffff;
+      border-radius: 1rem;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      max-width: 600px; /* 枠幅設定 */
+      width: 90%;
+    }
+    h1 {
+      font-size: 2rem;
+      color: #007bff;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    h2 {
+      font-size: 1.5rem;
+      color: #000;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    label {
+      font-weight: bold;
+      color: #000;
+      display: inline;
+      margin-right: 5px; /* ラベルと次の要素の間にスペースを追加 */
+    }
+    span {
+      color: #212529;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    ul {
+      padding-left: 1.5rem;
+      list-style-type: disc;
+    }
+    ul li {
+      margin-bottom: 1rem;
+    }
+    .btn-container {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 1rem; /* ボタン間の間隔 */
+    margin-bottom: 1.5rem; /* 戻るボタンとの間隔 */
+  }
+
+  .btn-primary, .btn-danger {
+    background-color: #007bff; /* 青地 (編集用) */
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.6rem 1.8rem; /* 少し大きく */
+    font-size: 1.1rem; /* フォントサイズも調整 */
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3; /* 濃い青 */
+  }
+
+  .btn-danger {
+    background-color: #dc3545; /* 赤地 (削除用) */
+  }
+
+  .btn-danger:hover {
+    background-color: #b52a37; /* 濃い赤 */
+  }
+
+  .btn-container a {
+    flex: none; /* ボタンのサイズは固定 */
+    text-align: center; /* 中央揃え */
+  }
+
+  .btn-warning {
+      background-color: #d9d6d6;
+      border: 2px solid black;
+      border-radius: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      flex: 1;
+      text-align: center;
+      width: 100%;
+    }
+    .btn-warning:hover {
+      background-color: #5a6268;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>アレルギー反応詳細</h1>
+    <h2>登録アレルゲン: <span th:text="${allergenName}"></span></h2>
+
+    <div class="form-group">
+      <label>コンタミの可否:</label>
+      <span th:if="${allergy.contamination == 1}">OK</span>
+      <span th:if="${allergy.contamination == 2}">NG</span>
+      <span th:if="${allergy.contamination == 0}">不明</span>
+      <span th:if="${allergy.contamination == 9}">どちらともいえない</span>
+    </div>
+
+    <div class="form-group">
+      <label>反応を起こす具体的な分量:</label>
+      <span th:text="*{allergy.quantity}"></span>
+    </div>
+
+    <div class="form-group">
+      <label>反応を起こす特定の産地:</label>
+      <span th:text="*{allergy.producingArea}"></span>
+    </div>
+
+    <div class="form-group">
+      <h3>反応の症状</h3>
+      <p th:if="${symForms == null || #lists.isEmpty(symForms)}">なし</p>
+      <ul th:if="${symForms != null && !#lists.isEmpty(symForms)}">
+        <li th:each="allergicsymptom : ${symForms}">
+          <label>症状:</label>
+          <span th:text="${allergicsymptom.symptom}"></span>
+          <br>
+          <label>反応時間:</label>
+          <span th:if="${allergicsymptom.reactionTime == 1}">数分～2時間後</span>
+          <span th:if="${allergicsymptom.reactionTime == 2}">数時間～半日後</span>
+          <span th:if="${allergicsymptom.reactionTime == 3}">数日後</span>
+          <span th:if="${allergicsymptom.reactionTime == 0}">不明</span>
+          <br>
+          <label>反応に付随する特徴:</label>
+          <span th:text="${allergicsymptom.feature}"></span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="form-group">
+      <label>このアレルゲンに対するアナフィラキシー反応経験:</label>
+      <span th:if="${allergy.anaExperience == 1}">経験がある</span>
+      <span th:if="${allergy.anaExperience == 2}">経験がない</span>
+      <span th:if="${allergy.anaExperience == 0}">不明</span>
+      <span th:if="${allergy.anaExperience == 9}">どちらともいえない</span>
+    </div>
+
+    <div class="form-group">
+      <label>現在のアナフィラキシー反応の可能性:</label>
+      <span th:if="${allergy.anaRisk == 1}">少量でも重篤な反応が起こりうる</span>
+      <span th:if="${allergy.anaRisk == 2}">少量による重篤な反応の可能性は低い</span>
+      <span th:if="${allergy.anaRisk == 0}">不明</span>
+      <span th:if="${allergy.anaRisk == 9}">どちらともいえない</span>
+    </div>
+
+    <div class="form-group">
+      <label>その他の追記事項:</label>
+      <span th:text="*{allergy.comment}"></span>
+    </div>
+
+    <div class="btn-container">
+        <a th:href="@{/allergy/edit/food/{reactionid}(reactionid=${allergy.reactionid})}">
+          <input class="btn btn-primary" type="button" value="編集">
+        </a>
+        <a th:href="@{/allergy/delete/{reactionid}(reactionid=${allergy.reactionid})}" 
+           onclick="return confirm('このアレルゲンに関する情報を本当に削除しますか？');">
+          <input class="btn btn-danger" type="button" value="削除">
+        </a>
+      </div>
+
+    <form method="get" th:action="@{/allergylist}" th:object="${userForm}">
+      <input name="uid" th:value="${allergy.uid}" type="hidden">
+      <button class="btn btn-warning" type="submit">もどる</button>
+    </form>
+  </div>
+</body>
+</html>

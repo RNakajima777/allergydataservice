@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>ユーザーの退会</title>
+  <link th:href="@{/webjars/bootstrap/5.0.0-beta3/css/bootstrap.min.css}" rel="stylesheet"/>
+  <script type="text/javascript" th:src="@{/webjars/bootstrap/5.0.0-beta3/js/bootstrap.min.js}"></script>
+  <style>
+    body {
+      background-color: #f4f6f8;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background-color: #ffffff;
+      border-radius: 1rem;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      max-width: 600px;
+      width: 90%;
+    }
+    h1 {
+      font-size: 2rem;
+      color: #dc3545; /* 赤色 */
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    table.table {
+      margin-bottom: 1.5rem;
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 0.5rem; /* 行間を空ける */
+    }
+    table.table th, table.table td {
+      padding: 0.75rem 1rem;
+      background-color: #f8f9fa;
+      border-radius: 0.5rem;
+    }
+    table.table th {
+      text-align: left;
+      color: #495057;
+      font-weight: bold;
+    }
+    table.table td {
+      color: #212529;
+    }
+    .btn-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem; /* ボタン間の隙間 */
+    }
+    .btn-danger {
+      background-color: #dc3545;
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      font-size: 1rem;
+      width: 100%;
+      color: #fff;
+    }
+    .btn-danger:hover {
+      background-color: #c82333;
+    }
+    .btn-warning {
+      background-color: #d9d6d6;
+      border: 2px solid black;
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      font-size: 1rem;
+      width: 100%;
+      color: black;
+    }
+    .btn-warning:hover {
+      background-color: #5a6268;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>
+        以下のユーザー情報は削除されます。<br>
+        本当によろしいですか？
+    </h1>
+    <table class="table">
+      <tbody>
+        <tr>
+          <th scope="row">ユーザーID</th>
+          <td>[[${uid}]]</td>
+        </tr>
+        <tr>
+          <th scope="row">ユーザーネーム</th>
+          <td>[[${username}]]</td>
+        </tr>
+        <tr>
+          <th scope="row">性別</th>
+          <td>
+            <span th:if="${sex == 1}">男性</span>
+            <span th:if="${sex == 2}">女性</span>
+            <span th:if="${sex == 9}">その他</span>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">生年月日</th>
+          <td>[[${birthday}]]</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="btn-container">
+      <form method="post" th:action="@{/user/delete}">
+        <input type="hidden" name="uid" th:value="${uid}">
+        <input class="btn btn-danger" type="submit" value="退会する">
+      </form>
+      <form method="get" th:action="@{/allergylist}" th:object="${userForm}">
+        <input name="uid" th:value="${uid}" type="hidden">
+        <input class="btn btn-warning" type="submit" value="戻る">
+      </form>
+    </div>
+  </div>
+</body>
+</html>

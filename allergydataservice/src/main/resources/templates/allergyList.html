@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>アレルギーリスト</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-color: #f4f6f8;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 2rem;
+            max-width: 800px;
+            width: 90%;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: #007bff;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: #333333;
+            margin-bottom: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+
+        th, td {
+            text-align: center;
+            vertical-align: middle;
+            padding: 0.5rem 1rem;
+            border: 1px solid #dee2e6;
+        }
+
+        th {
+            background-color: #f1f3f5;
+            font-weight: bold;
+        }
+
+        td {
+            background-color: #ffffff;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-green {
+            background-color: #28a745;
+            color: #ffffff;
+            font-size: 1.2rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: bold;
+        }
+
+        .btn-green:hover {
+            background-color: #218838;
+        }
+
+        .btn-warning {
+            background-color: #d9d6d6;
+            border: 1px solid black;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            color: black;
+        }
+
+        .btn-warning:hover {
+            background-color: #5a6268;
+            color: white;
+        }
+
+        .btn-red {
+            background-color: #dc3545;
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+        }
+
+        .btn-red:hover {
+            background-color: #c82333;
+        }
+
+        .button-group-footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 576px) {
+            .button-group-footer {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+  <div class="container">
+      <header>
+          <div class="button-group">
+            <form method="get" th:action="@{/allergy/add/allergentype}" th:object="${userForm}">
+                <input name="uid" th:value="${uid}" type="hidden">
+                <div class="mb-3">
+                  <input class="btn btn-green" type="submit" value="新たなアレルギー情報の追加">
+                </div>
+            </form>
+          </div>
+          <h1>[[${username}]]さんの登録アレルギー一覧</h1>
+      </header>
+
+      <div>
+        <h2>登録済みのアレルゲン</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>アレルゲン名</th>
+                    <th>アレルゲンの種類</th>
+                    <th> </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="reaction : ${reactions}">
+                    <td th:text="${reaction.allergenName}"></td>
+                    <td>
+                        <span th:switch="${reaction.allergenType}">
+                          <span th:case="1">食品</span>
+                          <span th:case="2">吸引</span>
+                          <span th:case="3">接触</span>
+                          <span th:case="4">その他</span>
+                        </span>
+                    </td>
+                    <td>
+                        <form th:action="@{/allergy/show/food/{reactionid}(reactionid=${reaction.reactionid})}" method="get">
+                            <button type="submit" class="btn btn-primary">詳細</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+      </div>
+
+      <div class="button-group">
+        <form method="get" th:action="@{/qr/{uid}(uid=${uid})}">
+            <div class="mb-3">
+              <input class="btn btn-green" type="submit" value="QRコードの表示">
+            </div>
+        </form>
+      </div>
+      
+      <div class="button-group-footer">
+          <form method="get" th:action="@{/}">
+              <input class="btn btn-warning" type="submit" value="ログアウト">
+          </form>
+          <form method="get" th:action="@{/user/delete/confirm}" th:object="${userForm}">
+              <input name="uid" th:value="${uid}" type="hidden">
+              <input class="btn btn-red" type="submit" value="退会">
+          </form>
+      </div>
+
+  </div>
+</body>
+</html>

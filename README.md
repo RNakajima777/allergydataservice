@@ -1,2 +1,0 @@
-# allergydataservice
-研究

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>アレルゲンリスト</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-color: #f4f6f8;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+    
+        .container {
+            background-color: #ffffff;
+            padding: 2rem;
+            max-width: 800px;
+            width: 90%;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+    
+        h1 {
+            font-size: 1.8rem;
+            color: #007bff;
+            margin-bottom: 1.5rem;
+        }
+    
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+            table-layout: fixed;
+        }
+    
+        th, td {
+            text-align: center;
+            vertical-align: middle;
+            padding: 0.3rem 0.5rem;
+            border: 1px solid #dee2e6;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+    
+        th {
+            background-color: #f1f3f5;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+    
+        td {
+            background-color: #ffffff;
+            font-size: 0.9rem;
+        }
+    
+        /* 列幅の調整 */
+        th:nth-child(1), td:nth-child(1) { /* アレルゲンID列 */
+            width: 10%;
+        }
+    
+        th:nth-child(2), td:nth-child(2) { /* アレルゲンタイプ列 */
+            width: 10%;
+        }
+    
+        th:nth-child(3), td:nth-child(3) { /* アレルゲン名列 */
+            width: 35%;
+        }
+    
+        th:nth-child(4), td:nth-child(4) { /* 食品ファミリー列 */
+            width: 25%;
+        }
+    
+        th:nth-child(5), td:nth-child(5) { /* 操作列 */
+            width: 20%;
+        }
+    
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+    
+        .btn {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.3rem;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none; /* 下線を削除 */
+        }
+    
+        .btn-primary {
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+        }
+    
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+    
+        .btn-danger {
+            background-color: #dc3545;
+            color: #ffffff;
+            border: none;
+        }
+    
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+    
+        .btn-add {
+            background-color: #28a745;
+            color: #ffffff;
+            padding: 0.6rem 1rem;
+            border-radius: 0.3rem;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            text-decoration: none;
+        }
+    
+        .btn-add:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+    
+        <h1>アレルゲンリスト</h1>
+
+        <form method="get" th:action="@{/manager/enter}">
+            <button type="submit" class="btn btn-add">新たなアレルゲン情報の追加</button>
+        </form>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>アレルゲンID</th>
+                    <th>アレルゲンタイプ</th>
+                    <th>アレルゲン名</th>
+                    <th>アレルゲンの分類</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="allergen : ${allergenList}">
+                    <td th:text="${allergen.allergenid}"></td>
+                    <td>
+                        <span th:switch="${allergen.allergenType}">
+                            <span th:case="1">食品</span>
+                            <span th:case="2">吸引</span>
+                            <span th:case="3">接触</span>
+                            <span th:case="4">その他</span>
+                        </span>
+                    </td>
+                    <td th:text="${allergen.allergenName}"></td>
+                    <td th:text="${allergen.foodFamily}"></td>
+                    <td>
+                        <div class="btn-group">
+                            <a th:href="@{/manager/allergen/edit/{allergenid}(allergenid=${allergen.allergenid})}" 
+                               class="btn btn-primary">編集</a>
+                            <a th:href="@{/manager/allergen/delete/{allergenid}(allergenid=${allergen.allergenid})}" 
+                               class="btn btn-danger" 
+                               onclick="return confirm('本当に削除しますか？');">削除</a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+</body>
+</html>

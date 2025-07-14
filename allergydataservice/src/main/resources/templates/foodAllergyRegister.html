@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>アレルギー反応の登録</title>
+  <link rel="stylesheet"
+        th:href="@{/webjars/bootstrap/5.0.0-beta3/css/bootstrap.min.css}"/>
+  <script th:src="@{/webjars/bootstrap/5.0.0-beta3/js/bootstrap.min.js}"
+          type="text/javascript"></script>
+          
+  <style>
+    /* 全体の基本設定 */
+    body {
+      background-color: #f4f6f8;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background-color: #ffffff;  /* 一番外側の丸みのある四角囲いだけ */
+      border-radius: 1rem;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      max-width: 800px; /* 横幅を縮める */
+      width: 90%;
+    }
+
+    header h1 {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+
+    h2.text-danger {
+      text-align: center;
+    }
+
+    /* フォーム全体 */
+    form {
+      margin-bottom: 15px;  /* 各フォームの周りのマージン */
+    }
+
+    /* ラベル */
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    /* 入力フィールド */
+    input[type="text"],
+    textarea {
+      width: 100%;
+      max-width: 600px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    /* ラジオボタン */
+    input[type="radio"] {
+      margin-right: 5px;
+    }
+
+    label[for] {
+      margin-right: 15px;
+      font-weight: normal;
+    }
+
+    /* ボタン */
+    button[type="button"],
+    input[type="submit"] {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 10px;
+    }
+
+    button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    font-size: 1rem;
+    width: 100%;
+    }
+    button[type="submit"]:hover {
+    background-color: #0056b3;
+    }
+
+    button[type="button"]:hover,
+    input[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+
+    button[type="button"].btn-warning,
+    input[type="submit"].btn-warning {
+    background-color: #d9d6d6;
+    border: 2px solid black; /* 太さを1pxから2pxに変更 */
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    font-size: 1rem;
+    width: 100%;
+    color: black;
+            }
+
+    button[type="button"].btn-warning:hover,
+    input[type="submit"].btn-warning:hover {
+        background-color: #5a6268;
+        color: white;
+    }
+
+    input[type="submit"].btn-warning.cancel-button {
+    background-color: #dc3545; /* 赤地 */
+    color: white; /* 白文字 */
+    border: none;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    width: 100%; /* 横幅100% */
+    }
+
+    input[type="submit"].btn-warning.cancel-button:hover {
+    background-color: #b02a37; /* 赤の濃い色 */
+    }
+
+    /* 症状フォーム */
+    #allergicsymptom {
+      margin-top: 10px;
+    }
+
+    
+
+    .symptom-form label {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .symptom-form {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #fefefe;
+      position: relative; /* 削除ボタンの絶対配置に必要 */
+      margin-bottom: 15px; /* 各症状フォーム間の余白を確保 */
+    }
+
+    .symptom-form button {
+        background-color: #dc3545; /* 赤地 */
+      color: white; /* 白文字 */
+      border: none;
+      border-radius: 0.5rem; /* 他ボタンと統一 */
+      padding: 0.5rem 1rem; /* 「症状を追加」ボタンと同じ余白 */
+      font-size: 1rem; /* 「症状を追加」ボタンと同じフォントサイズ */
+      cursor: pointer;
+      position: absolute; /* 相対位置に配置 */
+      bottom: 10px; /* フォーム内の下から10px */
+      right: 10px; /* フォーム内の右から10px */
+      height: auto; /* 自然な高さ */
+      line-height: 1.5; /* ボタン内のテキストの高さを揃える */
+    }
+
+    .symptom-form button:hover {
+      background-color: #b02a37; /* ホバー時の濃い赤 */
+    }
+
+    /* フッターのボタン群 */
+    form:last-of-type input[type="submit"] {
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      margin: 10px auto;
+    }
+
+    /* 各フォーム間のマージン調整 */
+    form > div {
+      margin-bottom: 20px;  /* 各項目間のマージン */
+    }
+
+    form > div:last-child {
+      margin-bottom: 0;
+    }
+
+    .contamination-options {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* 左揃え */
+    gap: 0.5rem; /* ボタン間の適切なスペース */
+    }
+
+    .contamination-options input[type="radio"] {
+    margin: 0;
+    vertical-align: middle;
+    }
+
+    .contamination-options label {
+    margin: 0;
+    }
+
+    .ana-options {
+    display: flex;
+    flex-direction: column; /* 子要素を縦に並べる */
+    gap: 0.5rem; /* 各行の間隔 */
+    }
+
+    .ana-options .option-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* ボタンと項目名の間隔 */
+    }
+
+    .ana-options input[type="radio"] {
+    margin: 0;
+    vertical-align: middle;
+    }
+
+    .ana-options label {
+    margin: 0;
+    }
+
+    .text-form label {
+    font-weight: bold; /* 太字に設定 */
+    }
+  </style>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      addSymptomForm();
+    });
+
+    function addSymptomForm() {
+      const symptomFormDiv = document.getElementById("allergicsymptom");
+      const index = symptomFormDiv.children.length;
+
+      const symptomFormHtml = `
+        <div id="symptom-${index}" class="symptom-form">
+          <label>症状:</label>
+          <input type="text" name="symptomForms[${index}].symptom" required>
+          <label>反応時間:</label>
+          <input type="radio" name="symptomForms[${index}].reactionTime" value="1" /> 数分～2時間後
+          <input type="radio" name="symptomForms[${index}].reactionTime" value="2" /> 数時間～半日後
+          <input type="radio" name="symptomForms[${index}].reactionTime" value="3" /> 数日後
+          <input type="radio" name="symptomForms[${index}].reactionTime" value="0" /> 不明
+          <label>反応に付随する特徴:</label>
+          <textarea name="symptomForms[${index}].feature"></textarea>
+          <button type="button" onclick="removeSymptomForm(${index})">この症状を削除</button>
+        </div>
+      `;
+      symptomFormDiv.insertAdjacentHTML('beforeend', symptomFormHtml);
+    }
+
+    function removeSymptomForm(index) {
+      const formToRemove = document.getElementById(`symptom-${index}`);
+      if (formToRemove) {
+        formToRemove.remove();
+        reindexSymptomForms();
+      }
+    }
+
+    function reindexSymptomForms() {
+      const symptomFormDiv = document.getElementById("allergicsymptom");
+      const forms = symptomFormDiv.getElementsByClassName("symptom-form");
+
+      Array.from(forms).forEach((form, newIndex) => {
+        form.id = `symptom-${newIndex}`;
+        form.querySelector("textarea").name = `symptomForms[${newIndex}].symptom`;
+
+        const radios = form.querySelectorAll("input[type='radio']");
+        radios.forEach(radio => {
+          radio.name = `symptomForms[${newIndex}].reactionTime`;
+        });
+
+        const featureInput = form.querySelector("input[type='text']");
+        featureInput.name = `symptomForms[${newIndex}].feature`;
+
+        const deleteButton = form.querySelector("button");
+        deleteButton.setAttribute("onclick", `removeSymptomForm(${newIndex})`);
+      });
+    }
+  </script>
+
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>[[${allergenName}]]に対するアレルギー反応について</h1>
+  </header>
+  <h2 th:if="${isFoodFormError}" class="text-danger">フォームエラーです．</h2>
+  <section>
+      <form th:action="@{/allergy/add/food/confirm}" th:object="${allergicReactionForm}" id= "allergicreactionform" method="get">
+          <input name="uid" th:value="${uid}" type="hidden">
+          <input name="allergenid" th:value="${allergenid}" type="hidden">
+          <input name="allergenNameByUser" th:value="${allergenNameByUser}" type="hidden">
+          
+          <div>
+              <label>コンタミ(製造過程におけるアレルゲンの微量混入)の可否:</label>
+              <div class="contamination-options">
+                <input type="radio" id="ok" name="contamination" th:field="*{contamination}" value="1" />
+                <label for="ok">OK</label>
+                <input type="radio" id="ng" name="contamination" th:field="*{contamination}" value="2" />
+                <label for="ng">NG</label>
+                <input type="radio" id="unknown" name="contamination" th:field="*{contamination}" value="0" />
+                <label for="unknown">不明</label>
+                <input type="radio" id="yesandno" name="contamination" th:field="*{contamination}" value="9" />
+                <label for="yesandno">どちらともいえない</label>
+              </div>
+          </div>
+          
+          <div class="text-form">
+              <label for="quantity">反応を起こす具体的な分量(あれば):</label>
+              <input type="text" id="quantity" th:field="*{quantity}" />    
+          </div>
+          
+          <div class="text-form">
+              <label for="producingArea">反応を起こす特定の産地(あれば):</label>
+              <input type="text" id="producingArea" th:field="*{producingArea}" />
+          </div>   
+
+          <div class="text-form">
+            <label for="allergicsymptom">反応の症状:</label>
+                <div id="allergicsymptom">
+                    <!-- 動的に症状フォームをここに追加 -->
+                </div>
+            <button type="button" onclick="addSymptomForm()">症状を追加</button>
+          </div>
+
+            <div class="ana-options">
+            <label>このアレルゲンに対する、アナフィラキシー反応(生命に関わる重篤な反応)の経験:</label>
+                <div class="option-item">
+            <input type="radio" id="yes" name="anaExperience" th:field="*{anaExperience}" value="1" />
+            <label for="yes">経験がある</label>
+                </div>
+                <div class="option-item">
+            <input type="radio" id="no" name="anaExperience" th:field="*{anaExperience}" value="2" />
+            <label for="no">経験がない</label>
+                </div>
+                <div class="option-item">
+            <input type="radio" id="unknown" name="anaExperience" th:field="*{anaExperience}" value="0" />
+            <label for="unknown">不明</label>
+                </div>
+                <div class="option-item">
+            <input type="radio" id="yesandno" name="anaExperience" th:field="*{anaExperience}" value="9" />
+            <label for="yesandno">どちらともいえない</label>
+                </div>
+            </div>
+
+          <div class="ana-options">
+            <label>現在のこのアレルゲンに対する、アナフィラキシー反応の可能性:</label>
+            <div class="option-item">
+            <input type="radio" id="yes" name="anaRisk" th:field="*{anaRisk}" value="1" />
+            <label for="yes">現在も、誤った摂取により重篤な反応が起こりうる</label>
+            </div>
+            <div class="option-item">
+            <input type="radio" id="no" name="anaRisk" th:field="*{anaRisk}" value="2" />
+            <label for="no">現在は、少量の摂取で重篤な反応が起こる可能性は低い</label>
+            </div>
+            <div class="option-item">
+            <input type="radio" id="unknown" name="anaRisk" th:field="*{anaRisk}" value="0" />
+            <label for="unknown">不明</label>
+            </div>
+            <div class="option-item">
+            <input type="radio" id="yesandno" name="anaRisk" th:field="*{anaRisk}" value="9" />
+            <label for="yesandno">どちらともいえない</label>
+            </div>
+          </div>
+
+          <div class="text-form">
+            <label for="comment">その他の追記事項(あれば):</label>
+            <textarea id="comment" th:field="*{comment}"></textarea>
+          </div>
+
+          <div>
+              <button type="submit" >登録する</button>
+          </div>
+      </form>
+
+      <form method="get" th:action="@{/allergy/add/food/allergen}" th:object="${userForm}">
+        <input name="uid" th:value="${uid}" type="hidden">
+        <input class="btn btn-warning" type="submit" value="もどる">
+      </form>
+      
+      <form method="get" th:action="@{/allergylist}" th:object="${userForm}">
+          <input name="uid" th:value="${uid}" type="hidden">
+          <input class="btn btn-warning cancel-button" type="submit" value="登録をやめる">
+      </form>
+
+  </section>
+</div>  
+</body>
+</html>

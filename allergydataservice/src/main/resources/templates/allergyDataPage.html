@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>アレルギー情報</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            background-color: #f4f6f8;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            max-width: 800px;
+            width: 95%;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            margin-top: 1.5rem;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #333333;
+            margin-bottom: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 0.6rem 0.5rem;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f1f3f5;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .status-ok, .status-low {
+            color: #2e8b57; /* 落ち着いた緑 */
+            font-weight: bold;
+        }
+
+        .status-ng, .status-high {
+            color: #d9534f; /* やや暗めの赤 */
+            font-weight: bold;
+        }
+
+        .status-uncertain {
+            color: #f0ad4e; /* 見やすい黄色 */
+            font-weight: bold;
+        }
+
+        .btn-tsuiki {
+            padding: 0.4rem 1rem;
+            border: 2px solid #007bff;
+            background-color: white;
+            color: #007bff;
+            border-radius: 0.4rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .btn-tsuiki:hover,
+        .btn-tsuiki.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .extra-notes-row {
+            display: none;
+            background-color: #f9f9f9;
+        }
+
+        .extra-notes-cell {
+            text-align: left;
+            padding: 0.8rem;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        @media (max-width: 576px) {
+            th, td {
+                font-size: 0.85rem;
+                padding: 0.5rem;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
+
+            .btn-tsuiki {
+                font-size: 0.8rem;
+                padding: 0.3rem 0.6rem;
+            }
+        }
+    </style>
+
+    <script>
+        function toggleExtraNotes(index) {
+            const row = document.getElementById("extra-notes-row" + index);
+            const btn = document.getElementById("toggle-btn-" + index);
+            if (row && btn) {
+                const isVisible = row.style.display !== "none";
+                row.style.display = isVisible ? "none" : "table-row";
+                btn.classList.toggle("active", !isVisible);
+            }
+        }
+
+        window.onload = function () {
+            const rows = document.querySelectorAll(".extra-notes-row");
+            rows.forEach(row => row.style.display = "none");
+        };
+    </script>
+</head>
+<body>
+
+<div class="container">
+
+    <h2 th:text="${username} + ' さんのアレルギー情報'">〇〇さんのアレルギー情報</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>アレルギー</th>
+                <th>反応リスク</th>
+                <th>コンタミ</th>
+                <th>追記</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="reaction, iterStat : ${reactions}">
+                <td>
+                    <a th:href="@{/data/show/food/{reactionid}(reactionid=${reaction.reactionid})}"
+                    style="text-decoration: none; color: inherit; font-weight: bold;">
+                    <span th:text="${reaction.allergenName}"></span>
+                    </a>
+                </td>
+                <td th:switch="${reaction.anaRisk}">
+                    <span th:case="1" class="status-high">高い</span>
+                    <span th:case="2" class="status-low">低い</span>
+                    <span th:case="0">不明</span>
+                    <span th:case="9" class="status-uncertain">微妙</span>
+                </td>
+                <td th:switch="${reaction.contamination}">
+                    <span th:case="1" class="status-ok">可</span>
+                    <span th:case="2" class="status-ng">否</span>
+                    <span th:case="0">不明</span>
+                    <span th:case="9" class="status-uncertain">微妙</span>
+                </td>
+                <td>
+                    <button th:if="${reaction.extraNotes != null and !reaction.extraNotes.isEmpty()}"
+                            th:id="'toggle-btn-' + ${iterStat.index}"
+                            class="btn-tsuiki"
+                            th:text="'あり'"
+                            th:onclick="|toggleExtraNotes(${iterStat.index})|">
+                    </button>
+                    <span th:if="${reaction.extraNotes == null or reaction.extraNotes.isEmpty()}">なし</span>
+                </td>
+            </tr>
+
+            <tr th:each="reaction, iterStat : ${reactions}"
+                th:id="'extra-notes-row' + ${iterStat.index}"
+                class="extra-notes-row">
+                <td colspan="4" class="extra-notes-cell" th:utext="${reaction.extraNotes}">
+                    ここに追記が表示されます。
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+
+</body>
+</html>
