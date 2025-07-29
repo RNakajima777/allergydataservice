@@ -31,6 +31,7 @@ import jp.kobe_u.cs27.allergydataservice.domain.service.AllergenService;
 import jp.kobe_u.cs27.allergydataservice.domain.service.AllergicReactionService;
 import jp.kobe_u.cs27.allergydataservice.domain.service.AllergicSymptomService;
 import jp.kobe_u.cs27.allergydataservice.domain.service.AllergyListService;
+import jp.kobe_u.cs27.allergydataservice.application.form.RestaurantForm;
 
 import java.util.ArrayList;
 import java.util.Arrays;

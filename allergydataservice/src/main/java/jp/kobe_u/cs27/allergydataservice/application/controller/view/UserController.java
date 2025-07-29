@@ -151,6 +151,20 @@ public class UserController {
   }
 
   /**
+   * ユーザ情報を表示する
+   *
+   * @param model
+   * @param form  ユーザID
+   * @return ユーザ情報ページ
+   */
+  @GetMapping("/user/details")
+  public String showUserDetails(Model model, @ModelAttribute UidForm form) {
+    User user = service.getUser(form.getUid());
+    model.addAttribute("user", user);
+    return "userInformation";
+  }
+
+  /**
    * ユーザを登録する
    *
    * @param model
@@ -212,7 +226,7 @@ public class UserController {
     model.addAttribute(new UserForm());
 
     // アレルゲン記録ページ
-    return "allergenTypeRegister";
+    return "userRegistrationComplete";
   }
 
   /**

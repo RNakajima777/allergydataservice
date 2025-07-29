@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>対応メモ一覧</title>
+    <style>
+        body {
+            background-color: #f4f6f8;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 2rem;
+            max-width: 800px;
+            width: 90%;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+        }
+        h1 {
+            font-size: 1.8rem;
+            color: #007bff;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+        th, td {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        th {
+            background-color: #f1f3f5;
+            font-weight: bold;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            margin-right: 0.5rem;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: #ffffff;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: #ffffff;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: #ffffff;
+        }
+        .btn-warning {
+            background-color: #d9d6d6;
+            border: 1px solid black;
+            color: black;
+        }
+        .btn-warning:hover {
+            background-color: #5a6268;
+            color: white;
+        }
+        .button-group-footer {
+            text-align: center;
+            margin-top: 2rem;
+        }
+        .editable-cell {
+            cursor: pointer;
+        }
+        .editing-row input[type='text'], .editing-row textarea {
+            width: 95%;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>対応メモ一覧</h1>
+
+    <table>
+        <thead>
+        <tr>
+            <th>記録日時</th>
+            <th>店の名前</th>
+            <th>店の場所</th>
+            <th>メモ</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="memo : ${memos}" th:id="'memo-row-' + ${memo.restaurantid}">
+            <td th:text="${#temporals.format(memo.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+            <form th:action="@{/restaurant/update/{restaurantid}(restaurantid=${memo.restaurantid})}" method="post" th:object="${restaurantForm}">
+                <td class="editable-cell" th:text="${memo.restaurantName}"></td>
+                <td class="editable-cell" th:text="${memo.restaurantPlace}"></td>
+                <td class="editable-cell" th:text="${memo.memo}"></td>
+                <td>
+                    <button type="button" class="btn btn-primary" th:onclick="toggleEditMode([[${memo.restaurantid}]], [[${memo.restaurantName}]], [[${memo.restaurantPlace}]], [[${memo.memo}]])">編集</button>
+                    <button type="submit" class="btn btn-primary" style="display:none;">保存</button>
+            </form>
+            <form th:action="@{/restaurant/delete/{restaurantid}(restaurantid=${memo.restaurantid})}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-danger">削除</button>
+            </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="button-group-footer">
+        <a th:href="@{/allergylist(uid=${uid})}" class="btn btn-warning">アレルギーリストにもどる</a>
+    </div>
+</div>
+
+<script>
+    function toggleEditMode(id, name, place, memo) {
+        const row = document.getElementById('memo-row-' + id);
+        const cells = row.getElementsByClassName('editable-cell');
+        const editButton = row.querySelector('button[type="button"]');
+        const saveButton = row.querySelector('button[type="submit"]');
+
+        if (row.classList.contains('editing-row')) {
+            // Cancel edit mode
+            row.classList.remove('editing-row');
+            cells[0].innerHTML = name;
+            cells[1].innerHTML = place;
+            cells[2].innerHTML = memo;
+            editButton.innerText = '編集';
+            saveButton.style.display = 'none';
+        } else {
+            // Enter edit mode
+            row.classList.add('editing-row');
+            cells[0].innerHTML = `<input type="text" name="restaurantName" value="${name}" required>`;
+            cells[1].innerHTML = `<input type="text" name="restaurantPlace" value="${place}">`;
+            cells[2].innerHTML = `<textarea name="memo" rows="3" required>${memo}</textarea>`;
+            editButton.innerText = 'キャンセル';
+            saveButton.style.display = 'inline-block';
+        }
+    }
+</script>
+
+</body>
+</html>

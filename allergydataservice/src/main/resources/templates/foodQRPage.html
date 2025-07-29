@@ -1,2 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>QRコード表示</title>
+    <link rel="stylesheet" href="/styles.css"> <!-- 全体用のCSSがある場合は適用 -->
+    <style>
+        body {
+            background-color: #f4f6f8;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        h1 {
+            font-size: 1.8rem;
+            color: #007bff;
+            margin-bottom: 1.5rem;
+        }
+        .qr-code-container {
+            margin-bottom: 2rem;
+        }
+        .form-container {
+            text-align: left;
+            margin-top: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 0.25rem;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: #ffffff;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: #ffffff;
+        }
+        .btn-warning {
+            background-color: #d9d6d6;
+            border: 1px solid black;
+            color: black;
+        }
+        .btn-warning:hover {
+            background-color: #5a6268;
+            color: white;
+        }
+        .button-group {
+            margin-top: 2rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>アレルギー情報 QRコード</h1>
 
-<img th:src="@{'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + ${qrDataUrl}}" alt="QR Code">
+        <div class="qr-code-container">
+            <img th:src="@{${'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + qrDataUrl}}" alt="QR Code">
+        </div>
+
+        <div class="form-container">
+            <h2>お店対応メモの追加</h2>
+            <form th:action="@{/restaurant/register}" method="post" th:object="${restaurantForm}">
+                <input type="hidden" name="uid" th:value="${uid}">
+                
+                <div class="form-group">
+                    <label for="restaurantName">店の名前 (必須)</label>
+                    <input type="text" id="restaurantName" th:field="*{restaurantName}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="restaurantPlace">店の場所</label>
+                    <input type="text" id="restaurantPlace" th:field="*{restaurantPlace}">
+                </div>
+
+                <div class="form-group">
+                    <label for="memo">メモ (必須)</label>
+                    <textarea id="memo" th:field="*{memo}" rows="4" required></textarea>
+                </div>
+
+                <div style="text-align: center;">
+                    <button type="submit" class="btn btn-primary">記録する</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="button-group">
+            <a th:href="@{/allergylist(uid=${uid})}" class="btn btn-warning">アレルギーリストにもどる</a>
+        </div>
+    </div>
+</body>
+</html>

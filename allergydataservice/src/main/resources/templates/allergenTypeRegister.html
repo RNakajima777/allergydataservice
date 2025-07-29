@@ -31,14 +31,23 @@
       color: #007bff;
       margin-bottom: 2rem;
     }
+    /* 4つボタン用のスタイル（元に戻す時用）
     .btn-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 1行に2列 */
-  gap: 2rem; /* ボタン間のスペース */
-  justify-content: center; /* 水平方向の中央揃え */
-  justify-items: center; /* ボタンをグリッド内で中央揃え */
-  align-items: center; /* 垂直方向の中央揃え */
-}
+      display: grid;
+      grid-template-columns: repeat(2, 1fr); 
+      gap: 2rem;
+      justify-content: center; 
+      justify-items: center; 
+      align-items: center; 
+    }
+    */
+
+    /* 1つボタン用の中央揃えスタイル */
+    .btn-container {
+      display: flex;
+      justify-content: center;
+    }
+    
     .btn-primary {
       background-color: #007bff;
       border: none;
@@ -84,9 +93,11 @@
         <input class="btn btn-primary" type="submit" value="食物性">
       </form>
     
+      <!--
       <button class="btn btn-primary">吸入性</button>
       <button class="btn btn-primary">接触性</button>
       <button class="btn btn-primary">その他</button>
+      -->
     </div>
     
 
