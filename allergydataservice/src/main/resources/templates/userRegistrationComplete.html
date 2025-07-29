@@ -66,21 +66,34 @@
     .btn-secondary.text-white {
         color: white;
     }
+    .btn-warning {
+      background-color: #d9d6d6;
+      border: 2px solid black; /* 太さを1pxから2pxに変更 */
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      font-size: 1rem;
+      width: 100%;
+      color: black;
+    }
+    .btn-warning:hover {
+      background-color: #5a6268;
+      color: white;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>登録が完了しました。</h1>
+    <h1>登録が完了しました！</h1>
     <p>すぐにアレルゲンの登録に進みますか？</p>
 
     <div class="btn-container">
-      <form method="get" th:action="@{/allergen/type/registerpage}">
+      <form method="get" th:action="@{/allergy/add/allergentype}">
         <input type="hidden" name="uid" th:value="${uid}">
         <input class="btn btn-primary text-white" type="submit" value="登録に進む">
       </form>
 
       <form method="get" th:action="@{/}">
-        <input class="btn btn-secondary text-white" type="submit" value="ログイン画面にもどる">
+        <input class="btn btn-warning" type="submit" value="ログイン画面にもどる">
       </form>
     </div>
   </div>

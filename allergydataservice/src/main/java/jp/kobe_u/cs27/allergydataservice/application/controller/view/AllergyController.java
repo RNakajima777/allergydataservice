@@ -72,9 +72,7 @@ public class AllergyController {
   public String showAllergenTypeInputPage(
       Model model,
       RedirectAttributes attributes,
-      @RequestParam("uid") String uid,
-      @ModelAttribute @Validated UserForm form,
-      BindingResult bindingResult) {
+      @RequestParam("uid") String uid) {
     model.addAttribute("uid", uid);
 
     return "allergenTypeRegister";

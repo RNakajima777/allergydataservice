@@ -41,7 +41,7 @@ public class RestaurantController {
     }
 
     @GetMapping("/restaurant/list/{uid}")
-    public String showRestaurantListPage(@PathVariable String uid, Model model) {
+    public String showRestaurantListPage(@PathVariable("uid") String uid, Model model) {
         List<Restaurant> memos = service.getRestaurantListByUid(uid);
         model.addAttribute("memos", memos);
         model.addAttribute("uid", uid);
@@ -54,7 +54,7 @@ public class RestaurantController {
 
     @PostMapping("/restaurant/update/{restaurantid}")
     public String updateRestaurant(
-            @PathVariable Long restaurantid,
+            @PathVariable("restaurantid") Long restaurantid,
             @ModelAttribute @Validated RestaurantForm form,
             BindingResult bindingResult,
             RedirectAttributes attributes) {
@@ -75,7 +75,7 @@ public class RestaurantController {
     }
 
     @PostMapping("/restaurant/delete/{restaurantid}")
-    public String deleteRestaurant(@PathVariable Long restaurantid, RedirectAttributes attributes) {
+    public String deleteRestaurant(@PathVariable("restaurantid") Long restaurantid, RedirectAttributes attributes) {
         String uid = service.getRestaurantByRestaurantid(restaurantid).getUid();
         service.deleteRestaurantByRestaurantid(restaurantid);
         attributes.addAttribute("uid", uid);
