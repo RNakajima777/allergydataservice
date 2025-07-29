@@ -129,7 +129,7 @@
       </div>
 
       <div>
-        <label for="username" class="required">ユーザー名:</label>
+        <label for="username" class="required">アプリで使用するお名前 (お店等で提示する場合があります) :</label>
         <input type="text" id="username" th:field="*{username}" required />
       </div>
 
@@ -146,8 +146,8 @@
       </div>
 
       <div>
-        <label for="birthday">生年月日:</label>
-        <input type="date" id="birthday" th:field="*{birthday}" max="[[${T(java.time.LocalDate).now()}]]" required />
+        <label for="birthday" class="required">生年月日:</label>
+        <input type="date" id="birthday" th:field="*{birthday}" max="[[${T(java.time.LocalDate).now()}]]" required/>
       </div>
 
       <div>
