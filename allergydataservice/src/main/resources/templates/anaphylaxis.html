@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>緊急時対応の登録・編集</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        body {
+            background-color: #f4f6f8;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+        }
+        h1 {
+            font-size: 2rem;
+            color: #007bff;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            line-height: 1.4; /* 行間を調整 */
+        }
+        .h1-sub {
+            font-size: 0.7em; /* h1に対する相対サイズ */
+            color: #333; /* 黒色 */
+            
+        }
+        label {
+            font-weight: bold;
+            color: #333;
+        }
+        /* 表示モード用のラベル */
+        #view-mode label {
+            display: inline-block;
+            margin-right: 5px;
+        }
+        /* フォーム用のラベル */
+        #edit-mode label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .form-group, .info-group {
+            margin-bottom: 1.5rem;
+        }
+        .memo-text {
+            white-space: pre-wrap; /* 改行を反映 */
+            word-wrap: break-word; /* 長い単語を折り返す */
+            display: inline-block;
+            padding-top: 0.25rem;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 0.25rem;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .radio-group label {
+            display: inline-block;
+            margin-right: 1rem;
+            font-weight: normal;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: #ffffff;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .btn-warning {
+            background-color: #d9d6d6;
+            border: 1px solid black;
+            color: black;
+        }
+        .btn-warning:hover {
+            background-color: #5a6268;
+            color: white;
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+        .button-group-right {
+            text-align: right;
+            margin-top: 2rem;
+        }
+        .button-group-footer {
+            text-align: center;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1><span class="h1-sub">（重篤な反応を起こす可能性のある方へ）</span><br>緊急時の対応について</h1>
+
+    <!-- モード切り替えコンテナ -->
+    <div id="anaphylaxis-container">
+
+        <!-- 表示モード -->
+        <div id="view-mode" th:style="${anaphylaxisForm.anaid == null} ? 'display:none;' : ''">
+            <div class="form-group">
+                <label>エピペンの有無:</label>
+                <span th:if="${anaphylaxisForm.epipen == 1}">あり</span>
+                <span th:if="${anaphylaxisForm.epipen == 0}">なし</span>
+            </div>
+            <div class="form-group">
+                <label>緊急連絡先:</label>
+                <br>
+                <span class="memo-text" th:text="${anaphylaxisForm.emergency != null && !anaphylaxisForm.emergency.isEmpty()} ? ${anaphylaxisForm.emergency} : '未登録'"></span>
+            </div>
+            <div class="form-group">
+                <label>その他推奨される対応:</label>
+                <br>
+                <span class="memo-text" th:text="${anaphylaxisForm.support != null && !anaphylaxisForm.support.isEmpty()} ? ${anaphylaxisForm.support} : 'なし'"></span>
+            </div>
+            <div class="button-group-right">
+                <button type="button" class="btn btn-primary" onclick="toggleEditMode()">編集</button>
+            </div>
+        </div>
+
+        <!-- 編集モード -->
+        <div id="edit-mode" th:style="${anaphylaxisForm.anaid != null} ? 'display:none;' : ''">
+            <form th:action="@{/anaphylaxis/register}" th:object="${anaphylaxisForm}" method="post">
+                <input type="hidden" th:field="*{uid}"/>
+                <input type="hidden" th:field="*{anaid}"/>
+
+                <div class="form-group">
+                    <label>エピペンの有無</label>
+                    <div class="radio-group">
+                        <label><input type="radio" th:field="*{epipen}" value="1" /> あり</label>
+                        <label><input type="radio" th:field="*{epipen}" value="0" /> なし</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="emergency">緊急連絡先</label>
+                    <textarea id="emergency" th:field="*{emergency}" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="support">その他推奨される対応</label>
+                    <textarea id="support" th:field="*{support}" rows="5"></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">保存</button>
+                    <button type="button" class="btn btn-warning" onclick="toggleEditMode()" th:if="${anaphylaxisForm.anaid != null}">キャンセル</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="button-group-footer">
+        <a th:href="@{/allergylist(uid=${anaphylaxisForm.uid})}" class="btn btn-warning">アレルギーリストにもどる</a>
+    </div>
+
+</div>
+
+<script>
+function toggleEditMode() {
+    const viewMode = document.getElementById('view-mode');
+    const editMode = document.getElementById('edit-mode');
+
+    if (viewMode.style.display === 'none') {
+        viewMode.style.display = 'block';
+        editMode.style.display = 'none';
+    } else {
+        viewMode.style.display = 'none';
+        editMode.style.display = 'block';
+    }
+}
+</script>
+</body>
+</html>

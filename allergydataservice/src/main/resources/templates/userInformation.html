@@ -2,6 +2,7 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ユーザー情報</title>
   <link th:href="@{/webjars/bootstrap/5.0.0-beta3/css/bootstrap.min.css}" rel="stylesheet"/>
   <style>
@@ -112,7 +113,7 @@
     <div class="btn-container">
         <form method="get" th:action="@{/allergylist}">
             <input type="hidden" name="uid" th:value="${user.uid}">
-            <input class="btn btn-warning" type="submit" value="戻る">
+            <input class="btn btn-warning" type="submit" value="もどる">
         </form>
     </div>
   </div>

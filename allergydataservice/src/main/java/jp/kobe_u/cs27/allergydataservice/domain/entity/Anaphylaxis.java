@@ -19,16 +19,16 @@ public class Anaphylaxis {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long anaid;
 
-    // アレルギー反応ID
-    private Long reactionid;
+    // ユーザID
+    private String uid;
 
-    // 症状
-    private String anasymptom;
-
-    // 発生年月日
-    private LocalDate anadate;
-
-    // エピペンの投与
+    // エピペンの有無
     private int epipen;
+
+    // 緊急連絡先
+    private String emergency;
+
+    // その他推奨される対応
+    private String support;
 
 }

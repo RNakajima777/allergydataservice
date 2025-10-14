@@ -36,7 +36,7 @@ public class PageController {
 
   @GetMapping("/qr/{uid}")
   public String showFoodQRCode(@PathVariable("uid") String uid, Model model) {
-      String qrDataUrl = "https://es4.eedept.kobe-u.ac.jp/Allergydataservice/data/" + uid; // QRコードに埋め込むURL
+      String qrDataUrl = "https://es4.eedept.kobe-u.ac.jp/allergydataservice/data/" + uid; // QRコードに埋め込むURL
       model.addAttribute("qrDataUrl", qrDataUrl);
       model.addAttribute("uid", uid);
       model.addAttribute(new RestaurantForm());

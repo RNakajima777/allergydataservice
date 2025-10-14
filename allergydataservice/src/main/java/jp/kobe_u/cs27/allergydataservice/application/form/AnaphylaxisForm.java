@@ -28,17 +28,17 @@ public class AnaphylaxisForm {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long anaid;
 
-  // アレルギー反応ID
-  private Long reactionid;
+  // ユーザID
+    private String uid;
 
-  // 症状
-  private String anasymptom;
+    // エピペンの有無
+    private int epipen;
 
-  // 発生年月日
-  private LocalDate anadate;
+    // 緊急連絡先
+    private String emergency;
 
-  // エピペンの投与
-  private int epipen;
+    // その他推奨される対応
+    private String support;
   
 }
 

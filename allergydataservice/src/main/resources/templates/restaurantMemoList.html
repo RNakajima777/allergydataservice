@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>対応メモ一覧</title>
     <style>
         body {
@@ -9,16 +10,11 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 2rem;
-            display: flex;
-            justify-content: center;
         }
         .container {
-            background-color: #ffffff;
-            padding: 2rem;
-            max-width: 800px;
-            width: 90%;
-            border: 1px solid #ddd;
-            border-radius: 0.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
         }
         h1 {
             font-size: 1.8rem;
@@ -26,61 +22,105 @@
             margin-bottom: 1.5rem;
             text-align: center;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
+
+        /* メモリストのコンテナをGridレイアウトに */
+        .memo-list {
+            display: grid;
+            grid-template-columns: 1fr; /* スマホでは1列 */
+            gap: 1.5rem;
             margin-bottom: 2rem;
         }
-        th, td {
-            text-align: left;
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid #dee2e6;
+
+        /* 画面幅が768px以上で2列 */
+        @media (min-width: 768px) {
+            .memo-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
-        th {
-            background-color: #f1f3f5;
+        
+        /* 画面幅が1200px以上で3列 */
+        @media (min-width: 1200px) {
+            .memo-list {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* 各メモカードのスタイル */
+        .memo-card {
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* カード内の各項目のスタイル */
+        .memo-item {
+            margin-bottom: 1rem;
+        }
+        .memo-label {
+            display: block;
+            color: #555;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+        }
+        .memo-value {
+            display: block;
+            word-wrap: break-word;
+            white-space: pre-wrap; /* メモ内容の改行を維持 */
+        }
+
+        /* ボタンなどのアクションエリア */
+        .memo-actions {
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        /* 編集フォームのスタイル */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
             font-weight: bold;
         }
+        .form-group input[type="text"], .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 0.25rem;
+            box-sizing: border-box; /* paddingを含めてwidth 100%にする */
+        }
+
+        /* 共通ボタンのスタイル */
         .btn {
             display: inline-block;
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1.5rem;
             border-radius: 0.5rem;
             font-size: 0.9rem;
             text-align: center;
             cursor: pointer;
             text-decoration: none;
             border: none;
-            margin-right: 0.5rem;
         }
-        .btn-primary {
-            background-color: #007bff;
-            color: #ffffff;
-        }
-        .btn-danger {
-            background-color: #dc3545;
-            color: #ffffff;
-        }
-        .btn-secondary {
-            background-color: #6c757d;
-            color: #ffffff;
-        }
-        .btn-warning {
-            background-color: #d9d6d6;
-            border: 1px solid black;
-            color: black;
-        }
-        .btn-warning:hover {
-            background-color: #5a6268;
-            color: white;
-        }
+        .btn-primary { background-color: #007bff; color: #ffffff; }
+        .btn-primary:hover { background-color: #0056b3; }
+        .btn-danger { background-color: #dc3545; color: #ffffff; }
+        .btn-danger:hover { background-color: #b02a37; }
+        .btn-secondary { background-color: #6c757d; color: #ffffff; }
+        .btn-warning { background-color: #d9d6d6; border: 1px solid black; color: black; }
+        .btn-warning:hover { background-color: #5a6268; color: white; }
+
         .button-group-footer {
             text-align: center;
             margin-top: 2rem;
-        }
-        .editable-cell {
-            cursor: pointer;
-        }
-        .editing-row input[type='text'], .editing-row textarea {
-            width: 95%;
         }
     </style>
 </head>
@@ -88,34 +128,60 @@
 <div class="container">
     <h1>対応メモ一覧</h1>
 
-    <table>
-        <thead>
-        <tr>
-            <th>記録日時</th>
-            <th>店の名前</th>
-            <th>店の場所</th>
-            <th>メモ</th>
-            <th>操作</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="memo : ${memos}" th:id="'memo-row-' + ${memo.restaurantid}">
-            <td th:text="${#temporals.format(memo.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
-            <form th:action="@{/restaurant/update/{restaurantid}(restaurantid=${memo.restaurantid})}" method="post" th:object="${restaurantForm}">
-                <td class="editable-cell" th:text="${memo.restaurantName}"></td>
-                <td class="editable-cell" th:text="${memo.restaurantPlace}"></td>
-                <td class="editable-cell" th:text="${memo.memo}"></td>
-                <td>
-                    <button type="button" class="btn btn-primary" th:onclick="toggleEditMode([[${memo.restaurantid}]], [[${memo.restaurantName}]], [[${memo.restaurantPlace}]], [[${memo.memo}]])">編集</button>
-                    <button type="submit" class="btn btn-primary" style="display:none;">保存</button>
-            </form>
-            <form th:action="@{/restaurant/delete/{restaurantid}(restaurantid=${memo.restaurantid})}" method="post" style="display: inline;">
-                <button type="submit" class="btn btn-danger">削除</button>
-            </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+    <!-- メモリスト -->
+    <div class="memo-list">
+        <!-- 各メモがカードになる -->
+        <div class="memo-card" th:each="memo : ${memos}" th:id="'memo-card-' + ${memo.restaurantid}">
+            
+            <!-- 表示モード -->
+            <div class="view-mode">
+                <div class="memo-item">
+                    <span class="memo-label">記録日時</span>
+                    <span class="memo-value" th:text="${#temporals.format(memo.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                </div>
+                <div class="memo-item">
+                    <span class="memo-label">店の名前</span>
+                    <span class="memo-value" th:text="${memo.restaurantName}"></span>
+                </div>
+                <div class="memo-item">
+                    <span class="memo-label">店の場所</span>
+                    <span class="memo-value" th:text="${memo.restaurantPlace}"></span>
+                </div>
+                <div class="memo-item">
+                    <span class="memo-label">メモ</span>
+                    <span class="memo-value" th:text="${memo.memo}"></span>
+                </div>
+                <div class="memo-actions">
+                    <button type="button" class="btn btn-primary" th:onclick="toggleEditMode([[${memo.restaurantid}]])">編集</button>
+                    <form th:action="@{/restaurant/delete/{restaurantid}(restaurantid=${memo.restaurantid})}" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">削除</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 編集モード (最初は非表示) -->
+            <div class="edit-mode" style="display:none;">
+                <form th:action="@{/restaurant/update/{restaurantid}(restaurantid=${memo.restaurantid})}" method="post">
+                    <div class="form-group">
+                        <label>店の名前</label>
+                        <input type="text" name="restaurantName" th:value="${memo.restaurantName}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>店の場所</label>
+                        <input type="text" name="restaurantPlace" th:value="${memo.restaurantPlace}">
+                    </div>
+                    <div class="form-group">
+                        <label>メモ</label>
+                        <textarea name="memo" rows="4" required th:text="${memo.memo}"></textarea>
+                    </div>
+                    <div class="memo-actions">
+                        <button type="submit" class="btn btn-primary">保存</button>
+                        <button type="button" class="btn btn-warning" th:onclick="toggleEditMode([[${memo.restaurantid}]])">キャンセル</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <div class="button-group-footer">
         <a th:href="@{/allergylist(uid=${uid})}" class="btn btn-warning">アレルギーリストにもどる</a>
@@ -123,28 +189,18 @@
 </div>
 
 <script>
-    function toggleEditMode(id, name, place, memo) {
-        const row = document.getElementById('memo-row-' + id);
-        const cells = row.getElementsByClassName('editable-cell');
-        const editButton = row.querySelector('button[type="button"]');
-        const saveButton = row.querySelector('button[type="submit"]');
+    function toggleEditMode(id) {
+        const card = document.getElementById('memo-card-' + id);
+        const viewMode = card.querySelector('.view-mode');
+        const editMode = card.querySelector('.edit-mode');
 
-        if (row.classList.contains('editing-row')) {
-            // Cancel edit mode
-            row.classList.remove('editing-row');
-            cells[0].innerHTML = name;
-            cells[1].innerHTML = place;
-            cells[2].innerHTML = memo;
-            editButton.innerText = '編集';
-            saveButton.style.display = 'none';
+        // 表示・非表示を切り替える
+        if (viewMode.style.display === 'none') {
+            viewMode.style.display = 'block';
+            editMode.style.display = 'none';
         } else {
-            // Enter edit mode
-            row.classList.add('editing-row');
-            cells[0].innerHTML = `<input type="text" name="restaurantName" value="${name}" required>`;
-            cells[1].innerHTML = `<input type="text" name="restaurantPlace" value="${place}">`;
-            cells[2].innerHTML = `<textarea name="memo" rows="3" required>${memo}</textarea>`;
-            editButton.innerText = 'キャンセル';
-            saveButton.style.display = 'inline-block';
+            viewMode.style.display = 'none';
+            editMode.style.display = 'block';
         }
     }
 </script>
