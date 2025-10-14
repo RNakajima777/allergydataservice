@@ -2,6 +2,7 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>アレルギー反応登録確認</title>
   <link th:href="@{/webjars/bootstrap/5.0.0-beta3/css/bootstrap.min.css}" rel="stylesheet"/>
   <script type="text/javascript" th:src="@{/webjars/bootstrap/5.0.0-beta3/js/bootstrap.min.js}"></script>
@@ -109,7 +110,7 @@
     <h1>編集結果確認</h1>
     <h2>登録アレルゲン: <span th:text="${allergenName}"></span></h2>
 
-    <form th:action="@{/allergy/food/register}" th:object="${allergicReactionForm}" method="post">
+    <form th:action="@{/allergy/food/update/{reactionid}(reactionid=${reactionid})}" th:object="${allergicReactionForm}" method="post">
       <input type="hidden" name="uid" th:field="*{uid}">
       <input type="hidden" name="allergenid" th:field="*{allergenid}">
       <input type="hidden" name="allergenNameByUser" th:field="*{allergenNameByUser}">

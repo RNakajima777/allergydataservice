@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>アレルギーリスト</title>
     <link rel="stylesheet" href="styles.css">
     <style>
@@ -73,7 +74,7 @@
 
         .btn {
             display: inline-block;
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1.5rem;
             border-radius: 0.5rem;
             font-size: 1rem;
             text-align: center;
@@ -205,6 +206,11 @@
             <input name="uid" th:value="${uid}" type="hidden">
             <div class="mb-3">
               <input class="btn btn-green" type="submit" value="新たなアレルギー情報の追加">
+            </div>
+        </form>
+        <form method="get" th:action="@{/anaphylaxis/{uid}(uid=${uid})}">
+            <div class="mt-3">
+              <input class="btn btn-primary" type="submit" value="緊急時の対応を確認する">
             </div>
         </form>
         <form method="get" th:action="@{/restaurant/list/{uid}(uid=${uid})}">

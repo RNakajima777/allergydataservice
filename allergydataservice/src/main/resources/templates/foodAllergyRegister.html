@@ -2,6 +2,7 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>アレルギー反応の登録</title>
   <link rel="stylesheet"
         th:href="@{/webjars/bootstrap/5.0.0-beta3/css/bootstrap.min.css}"/>
@@ -156,7 +157,7 @@
       border: 1px solid #ccc;
       border-radius: 5px;
       background-color: #fefefe;
-      position: relative; /* 削除ボタンの絶対配置に必要 */
+      /* position: relative; 削除ボタンの絶対配置に必要 */
       margin-bottom: 15px; /* 各症状フォーム間の余白を確保 */
     }
 
@@ -168,9 +169,10 @@
       padding: 0.5rem 1rem; /* 「症状を追加」ボタンと同じ余白 */
       font-size: 1rem; /* 「症状を追加」ボタンと同じフォントサイズ */
       cursor: pointer;
-      position: absolute; /* 相対位置に配置 */
-      bottom: 10px; /* フォーム内の下から10px */
-      right: 10px; /* フォーム内の右から10px */
+      /* position: absolute;  相対位置に配置 */
+      /* bottom: 10px;  フォーム内の下から10px */
+      /* right: 10px;  フォーム内の右から10px */
+      margin-top: 10px; /* 上にマージンを追加 */
       height: auto; /* 自然な高さ */
       line-height: 1.5; /* ボタン内のテキストの高さを揃える */
     }
@@ -196,21 +198,7 @@
       margin-bottom: 0;
     }
 
-    .contamination-options {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start; /* 左揃え */
-    gap: 0.5rem; /* ボタン間の適切なスペース */
-    }
-
-    .contamination-options input[type="radio"] {
-    margin: 0;
-    vertical-align: middle;
-    }
-
-    .contamination-options label {
-    margin: 0;
-    }
+    
 
     .ana-options {
     display: flex;
@@ -236,6 +224,11 @@
     .text-form label {
     font-weight: bold; /* 太字に設定 */
     }
+
+    .delete-button-wrapper {
+      display: flex;
+      justify-content: flex-end;
+    }
   </style>
   
   <script>
@@ -252,13 +245,29 @@
           <label>症状:</label>
           <input type="text" name="symptomForms[${index}].symptom" required>
           <label>反応時間:</label>
-          <input type="radio" name="symptomForms[${index}].reactionTime" value="1" /> 数分～2時間後
-          <input type="radio" name="symptomForms[${index}].reactionTime" value="2" /> 数時間～半日後
-          <input type="radio" name="symptomForms[${index}].reactionTime" value="3" /> 数日後
-          <input type="radio" name="symptomForms[${index}].reactionTime" value="0" /> 不明
+          <div class="ana-options">
+            <div class="option-item">
+              <input type="radio" id="time1-${index}" name="symptomForms[${index}].reactionTime" value="1" />
+              <label for="time1-${index}">数分～2時間後</label>
+            </div>
+            <div class="option-item">
+              <input type="radio" id="time2-${index}" name="symptomForms[${index}].reactionTime" value="2" />
+              <label for="time2-${index}">数時間～半日後</label>
+            </div>
+            <div class="option-item">
+              <input type="radio" id="time3-${index}" name="symptomForms[${index}].reactionTime" value="3" />
+              <label for="time3-${index}">数日後</label>
+            </div>
+            <div class="option-item">
+              <input type="radio" id="time0-${index}" name="symptomForms[${index}].reactionTime" value="0" />
+              <label for="time0-${index}">不明</label>
+            </div>
+          </div>
           <label>反応に付随する特徴:</label>
           <textarea name="symptomForms[${index}].feature"></textarea>
-          <button type="button" onclick="removeSymptomForm(${index})">この症状を削除</button>
+          <div class="delete-button-wrapper">
+            <button type="button" onclick="removeSymptomForm(${index})">この症状を削除</button>
+          </div>
         </div>
       `;
       symptomFormDiv.insertAdjacentHTML('beforeend', symptomFormHtml);
@@ -307,15 +316,21 @@
           <input name="allergenid" th:value="${allergenid}" type="hidden">
           <input name="allergenNameByUser" th:value="${allergenNameByUser}" type="hidden">
           
-          <div>
+          <div class="ana-options">
               <label>コンタミ(製造過程におけるアレルゲンの微量混入)の可否:</label>
-              <div class="contamination-options">
+              <div class="option-item">
                 <input type="radio" id="ok" name="contamination" th:field="*{contamination}" value="1" />
                 <label for="ok">OK</label>
+              </div>
+              <div class="option-item">
                 <input type="radio" id="ng" name="contamination" th:field="*{contamination}" value="2" />
                 <label for="ng">NG</label>
+              </div>
+              <div class="option-item">
                 <input type="radio" id="unknown" name="contamination" th:field="*{contamination}" value="0" />
                 <label for="unknown">不明</label>
+              </div>
+              <div class="option-item">
                 <input type="radio" id="yesandno" name="contamination" th:field="*{contamination}" value="9" />
                 <label for="yesandno">どちらともいえない</label>
               </div>
@@ -381,7 +396,7 @@
 
           <div class="text-form">
             <label for="comment">その他の追記事項(あれば):</label>
-            <textarea id="comment" th:field="*{comment}"></textarea>
+            <textarea id="comment" th:field="*{comment}" placeholder="例: 加熱していれば可, ..."></textarea>
           </div>
 
           <div>

@@ -54,7 +54,7 @@ public class RestaurantService {
   }
 
   public List<Restaurant> getRestaurantListByUid(String uid){
-    List<Restaurant> returnList = restaurants.findByUid(uid);
+    List<Restaurant> returnList = restaurants.findByUidOrderByCreatedAtDesc(uid);
     return returnList;
   } 
 

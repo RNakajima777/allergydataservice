@@ -31,6 +31,8 @@ import jp.kobe_u.cs27.allergydataservice.domain.service.AllergenService;
 import jp.kobe_u.cs27.allergydataservice.domain.service.AllergicReactionService;
 import jp.kobe_u.cs27.allergydataservice.domain.service.AllergicSymptomService;
 import jp.kobe_u.cs27.allergydataservice.domain.service.AllergyListService;
+import jp.kobe_u.cs27.allergydataservice.domain.service.AnaphylaxisService;
+
 import jp.kobe_u.cs27.allergydataservice.application.form.RestaurantForm;
 
 import java.util.ArrayList;
@@ -46,6 +48,7 @@ public class AllergyController {
   private final AllergicReactionService allergicReactionService;
   private final AllergicSymptomService allergicSymptomService;
   private final AllergyListService allergyListService;
+  private final AnaphylaxisService anaphylaxisService;
 
   //アレルギーリストを表示する
   @GetMapping("/allergylist")
@@ -240,6 +243,12 @@ public class AllergyController {
       return "redirect:/allergy/add/food/allergen";
     }
 
+    // 緊急時対応情報が未登録で、アナフィラキシーリスクが高い場合
+    if (form.getAnaRisk() != 2 && anaphylaxisService.getAnaphylaxis(form.getUid()).getAnaid() == null) {
+        attributes.addAttribute("uid", form.getUid());
+        return "redirect:/anaphylaxis/{uid}";
+    }
+
     // ユーザIDとニックネームをModelに登録する
     attributes.addAttribute(
         "uid",
@@ -351,6 +360,7 @@ public class AllergyController {
   @PostMapping("/allergy/food/update/{reactionid}")
   public String updateFoodAllergy(
       Model model,
+      RedirectAttributes attributes, 
       @PathVariable("reactionid") Long reactionid,
       @ModelAttribute
       @Validated
@@ -358,6 +368,12 @@ public class AllergyController {
 
     // アレルギーを登録する
     allergicReactionService.updateFoodAllergy(form, reactionid);
+
+    // 緊急時対応情報が未登録で、アナフィラキシーリスクが高い場合
+    if (form.getAnaRisk() != 2 && anaphylaxisService.getAnaphylaxis(form.getUid()).getAnaid() == null) {
+        attributes.addAttribute("uid", form.getUid());
+        return "redirect:/anaphylaxis/{uid}";
+    }
     
     // アレルゲン記録ページ
     return "redirect:/allergy/show/food/{reactionid}";

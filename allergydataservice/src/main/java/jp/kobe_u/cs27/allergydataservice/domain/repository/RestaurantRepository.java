@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RestaurantRepository extends CrudRepository<Restaurant, Long> {
 
-    List<Restaurant> findByUid(String uid);
+    List<Restaurant> findByUidOrderByCreatedAtDesc(String uid);
 
     Restaurant findByRestaurantid(Long restaurantid);
 
