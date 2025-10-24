@@ -50,6 +50,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 2rem;
+            table-layout: fixed; /* テーブルレイアウトを固定 */
         }
 
         th, td {
@@ -62,10 +63,16 @@
         th {
             background-color: #f1f3f5;
             font-weight: bold;
+            white-space: nowrap; /* ヘッダーの改行を防ぐ */
         }
 
         td {
             background-color: #ffffff;
+        }
+
+        /* アレルゲン名の列のスタイル */
+        td:nth-child(1) {
+            word-break: break-word; /* 長い単語を折り返す */
         }
 
         a {
@@ -78,6 +85,7 @@
             border-radius: 0.5rem;
             font-size: 1rem;
             text-align: center;
+            white-space: nowrap; /* ボタン内の改行を防ぐ */
             cursor: pointer;
         }
 
@@ -156,6 +164,32 @@
             .btn {
                 width: 100%;
             }
+
+            /* 詳細ボタンはwidth:100%の対象外にし、サイズを調整 */
+            td .btn {
+                width: auto;
+                padding: 0.5rem 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            /* 「アレルゲンの種類」ヘッダーのみ改行を許可し、余白を調整 */
+            th:nth-child(2) {
+                white-space: normal;
+                padding-left: 0.2rem;
+                padding-right: 0.2rem;
+            }
+
+            /* 詳細ボタン列の余白を調整 */
+            th:nth-child(3),
+            td:nth-child(3) {
+                padding-left: 0.2rem;
+                padding-right: 0.2rem;
+            }
+
+            /* スマホ表示時の列幅を指定 */
+            th:nth-child(1), td:nth-child(1) { width: 48%; }
+            th:nth-child(2), td:nth-child(2) { width: 30%; }
+            th:nth-child(3), td:nth-child(3) { width: 22%; }
         }
     </style>
 </head>

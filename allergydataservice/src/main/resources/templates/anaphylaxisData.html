@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>緊急時対応</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        body {
+            background-color: #f4f6f8;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+        }
+        h1 {
+            font-size: 2rem;
+            color: #d9534f;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            line-height: 1.4;
+        }
+        label {
+            font-weight: bold;
+            color: #333;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .info-group {
+            margin-bottom: 1.5rem;
+        }
+        .memo-text {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            display: inline-block;
+            padding-top: 0.25rem;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+        }
+        .btn-warning {
+            background-color: #d9d6d6;
+            border: 1px solid black;
+            color: black;
+        }
+        .btn-warning:hover {
+            background-color: #5a6268;
+            color: white;
+        }
+        .button-group-footer {
+            text-align: center;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>緊急時対応</h1>
+
+    <div id="view-mode">
+        <div class="info-group">
+            <label>エピペンの有無:</label>
+            <span th:if="${anaphylaxis.epipen == 1}">あり</span>
+            <span th:if="${anaphylaxis.epipen == 0}">なし</span>
+            <span th:if="${anaphylaxis.epipen == null}">未登録</span>
+        </div>
+        <div class="info-group">
+            <label>緊急連絡先:</label>
+            <br>
+            <span class="memo-text" th:text="${anaphylaxis.emergency != null && !anaphylaxis.emergency.isEmpty()} ? ${anaphylaxis.emergency} : '未登録'"></span>
+        </div>
+        <div class="info-group">
+            <label>その他推奨される対応:</label>
+            <br>
+            <span class="memo-text" th:text="${anaphylaxis.support != null && !anaphylaxis.support.isEmpty()} ? ${anaphylaxis.support} : 'なし'"></span>
+        </div>
+    </div>
+
+    <div class="button-group-footer">
+        <a th:href="@{/data/{uid}(uid=${uid})}" class="btn btn-warning">もどる</a>
+    </div>
+
+</div>
+</body>
+</html>

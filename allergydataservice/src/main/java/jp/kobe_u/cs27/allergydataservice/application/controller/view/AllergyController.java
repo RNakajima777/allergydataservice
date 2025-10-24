@@ -131,6 +131,11 @@ public class AllergyController {
       @Validated
           AllergicReactionForm form,
       BindingResult bindingResult) {
+    if (bindingResult.hasFieldErrors("allergenNameByUser")) {
+        attributes.addFlashAttribute("allergenNameError", "アレルゲン名が長すぎます");
+        attributes.addAttribute("uid", form.getUid());
+        return "redirect:/allergy/add/food/allergen";
+    }
     try {
       if (form.getAllergenid() != null) {
           allergicReactionService.validateAllergenDoesNotExist(form.getUid(), form.getAllergenid());
@@ -427,6 +432,15 @@ public class AllergyController {
     model.addAttribute("symForms", symptoms);
     model.addAttribute(new AllergicReactionForm());
     return "foodAllergyDetailData";
+  }
+
+  //緊急時対応ページ
+  @GetMapping("/data/show/emergency/{uid}")
+  public String showAnaphylaxisDataPage(@PathVariable("uid") String uid, Model model) {
+      jp.kobe_u.cs27.allergydataservice.domain.entity.Anaphylaxis anaphylaxis = anaphylaxisService.getAnaphylaxis(uid);
+      model.addAttribute("anaphylaxis", anaphylaxis);
+      model.addAttribute("uid", uid);
+      return "anaphylaxisData";
   }
   
 }

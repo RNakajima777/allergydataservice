@@ -39,22 +39,30 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 0.95rem;
+            table-layout: fixed; /* テーブルレイアウトを固定 */
         }
 
         th, td {
             border: 1px solid #dee2e6;
             padding: 0.6rem 0.5rem;
             text-align: center;
+            vertical-align: middle; /* ボタンとテキストを中央揃えにする */
         }
 
         th {
             background-color: #f1f3f5;
             font-weight: bold;
             color: #333;
+            white-space: nowrap; /* ヘッダーの改行を防ぐ */
+        }
+
+        /* アレルギー名の列のスタイル */
+        td:nth-child(1) {
+            word-break: break-word; /* 長い単語を折り返す */
         }
 
         .status-ok, .status-low {
-            color: #2e8b57; /* 落ち着いた緑 */
+            color: #4fd64f; /* 落ち着いた緑 */
             font-weight: bold;
         }
 
@@ -69,20 +77,51 @@
         }
 
         .btn-tsuiki {
+            display: inline-block; /* aタグでもボタンのように振る舞うようにする */
             padding: 0.4rem 1rem;
             border: 2px solid #007bff;
             background-color: white;
             color: #007bff;
             border-radius: 0.4rem;
             font-size: 0.9rem;
+            font-weight: bold; /* 文字を太くする */
+            text-decoration: none; /* aタグの下線を消す */
             cursor: pointer;
             transition: all 0.2s ease-in-out;
+        }
+
+        /* 追記ボタン(buttonタグ)の改行を禁止 */
+        button.btn-tsuiki {
+            white-space: nowrap;
         }
 
         .btn-tsuiki:hover,
         .btn-tsuiki.active {
             background-color: #007bff;
+            color: white !important; /* ホバー時の文字色を確実に白にする */
+        }
+
+        .button-container {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .btn-emergency {
+            display: inline-block;
+            padding: 0.6rem 1.2rem;
+            background-color: #d9534f;
             color: white;
+            border: 1px solid black;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            -webkit-appearance: none; /* Remove default iOS styles */
+            appearance: none;
+        }
+
+        .btn-emergency:hover {
+            background-color: #c9302c;
         }
 
         .extra-notes-row {
@@ -111,6 +150,12 @@
                 font-size: 0.8rem;
                 padding: 0.3rem 0.6rem;
             }
+
+            /* スマホ表示時の列幅を指定 */
+            th:nth-child(1), td:nth-child(1) { width: 34%; } /* アレルギー */
+            th:nth-child(2), td:nth-child(2) { width: 24%; } /* 反応リスク */
+            th:nth-child(3), td:nth-child(3) { width: 20%; } /* コンタミ */
+            th:nth-child(4), td:nth-child(4) { width: 22%; } /* 追記 */
         }
     </style>
 
@@ -135,7 +180,13 @@
 
 <div class="container">
 
-    <h2 th:text="${username} + ' さんのアレルギー情報'">〇〇さんのアレルギー情報</h2>
+    <h2 th:text="${username} + ' さんのアレルギー'">〇〇さんのアレルギー</h2>
+
+    <div class="button-container">
+        <form th:action="@{/data/show/emergency/{uid}(uid=${uid})}" method="get">
+            <input type="submit" class="btn-emergency" value="緊急時対応">
+        </form>
+    </div>
 
     <table>
         <thead>
@@ -150,8 +201,8 @@
             <tr th:each="reaction, iterStat : ${reactions}">
                 <td>
                     <a th:href="@{/data/show/food/{reactionid}(reactionid=${reaction.reactionid})}"
-                    style="text-decoration: none; color: inherit; font-weight: bold;">
-                    <span th:text="${reaction.allergenName}"></span>
+                       class="btn-tsuiki">
+                        <span th:text="${reaction.allergenName}"></span>
                     </a>
                 </td>
                 <td th:switch="${reaction.anaRisk}">

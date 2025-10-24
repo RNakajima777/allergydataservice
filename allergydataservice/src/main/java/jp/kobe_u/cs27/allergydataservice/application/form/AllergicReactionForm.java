@@ -14,6 +14,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 /**
  * アレルゲン反応設定フォーム
@@ -36,6 +37,7 @@ public class AllergicReactionForm {
     private Long allergenid;
 
     //ユーザーのつくったアレルゲン名
+    @Size(max = 20, message = "アレルゲン名が長すぎます")
     private String allergenNameByUser;
 
     // コンタミの可否

@@ -26,7 +26,8 @@
       text-align: center;
     }
     h1 {
-      font-size: 2rem;
+      /* 画面幅に応じてフォントサイズを調整し、改行を防ぐ */
+      font-size: clamp(1.4rem, 7.5vw, 2.2rem);
       color: #007bff;
       margin-bottom: 1.5rem;
     }
@@ -79,12 +80,16 @@
       margin-bottom: 1.5rem !important;
     }
     @media (max-width: 576px) {
+      .container {
+        padding: 2rem 1rem; /* スマホ表示では左右の余白を減らす */
+      }
       .form-inline {
         flex-direction: column;
         gap: 1rem;
       }
       .form-control {
         width: 100%;
+        box-sizing: border-box; /* paddingとborderをwidthに含める */
       }
       .btn {
         width: 100%;
