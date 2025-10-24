@@ -393,10 +393,12 @@
     <!-- 新しいアレルゲンの登録 -->
     <h3>登録したいアレルゲンが存在しない場合:</h3>
     <h4>登録したいアレルゲンの名前を入力してください</h4>
+    <!-- エラーメッセージ表示 -->
+    <div th:if="${allergenNameError}" th:text="${allergenNameError}" class="text-danger" style="margin-bottom: 1rem;"></div>
     <form method="get" th:action="@{/allergy/add/food/allergicreaction}" th:object="${allergicReactionForm}">
       <input type="hidden" name="uid" th:value="${uid}" />
       <div class="input-group">
-        <input type="text" name="allergenNameByUser" placeholder="例: 卵" required />
+        <input type="text" name="allergenNameByUser" placeholder="例: 卵" required maxlength="20" />
         <button type="submit">このアレルゲンで登録</button>
       </div>
     </form>
