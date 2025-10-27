@@ -118,6 +118,8 @@ public class AllergyController {
     model.addAttribute("imoAllergens", allergenService.getAllergenByFoodFamily("芋類"));
     model.addAttribute("kinokoAllergens", allergenService.getAllergenByFoodFamily("きのこ類"));
     model.addAttribute("yasaiAllergens", allergenService.getAllergenByFoodFamily("野菜類"));
+
+    model.addAttribute("groupAllergens", allergenService.getGroupAllergens());
     
     return "foodAllergenRegister";
   }
@@ -130,6 +132,7 @@ public class AllergyController {
       @ModelAttribute
       @Validated
           AllergicReactionForm form,
+      @RequestParam(name = "isGroup", defaultValue = "false") boolean isGroup, // isGroup パラメータを受け取る
       BindingResult bindingResult) {
     if (bindingResult.hasFieldErrors("allergenNameByUser")) {
         attributes.addFlashAttribute("allergenNameError", "アレルゲン名が長すぎます");
@@ -165,16 +168,22 @@ public class AllergyController {
       "allergenNameByUser",
       form.getAllergenNameByUser());
 
+    boolean isGroupFlag = isGroup; // パラメータのisGroupを初期値とする
+
     if (form.getAllergenid() != null) {
-      // allergenid が null でない場合
+      // allergenid が null でない場合、DBの値で上書き
+      jp.kobe_u.cs27.allergydataservice.domain.entity.Allergen allergen = allergenService.getAllergenByAllergenid(form.getAllergenid());
       model.addAttribute(
           "allergenName",
-          allergenService.getAllergenByAllergenid(form.getAllergenid()).getAllergenName()
+          allergen.getAllergenName()
       );
+      isGroupFlag = allergen.isAllergenGroup();
     } else {
         // allergenid が null の場合
         model.addAttribute("allergenName", form.getAllergenNameByUser()); // 適切なデフォルト値を設定
     }
+
+    model.addAttribute("isGroup", isGroupFlag); // 最終的なフラグをモデルに追加
 
     return "foodAllergyRegister";
   }
@@ -288,30 +297,51 @@ public class AllergyController {
     Model model,
     @PathVariable("reactionid") Long reactionid) {
     AllergicReaction allergy = allergicReactionService.getAllergyByReactionid(reactionid);
-    model.addAttribute(new AllergicReactionForm());
+    AllergicReactionForm form = new AllergicReactionForm();
 
-    // ユーザIDとニックネームをModelに追加する
-    model.addAttribute(
-        "uid",
-        allergy.getUid());
-    model.addAttribute(
-        "allergenid",
-        allergy.getAllergenid());
-    model.addAttribute(
-      "allergenNameByUser",
-      allergy.getAllergenNameByUser());
-    if(allergy.getAllergenid() != null){
-      model.addAttribute(
-      "allergenName",
-      allergenService.getAllergenByAllergenid(allergy.getAllergenid()).getAllergenName());
-    } else {
-      model.addAttribute(
-      "allergenName",
-      allergy.getAllergenNameByUser());
+    // --- 1. form への値の詰め替え (症状リスト含む) ---
+    form.setUid(allergy.getUid());
+    form.setAllergenid(allergy.getAllergenid());
+    form.setAllergenNameByUser(allergy.getAllergenNameByUser());
+    form.setContamination(allergy.getContamination());
+    form.setQuantity(allergy.getQuantity());
+    form.setProducingArea(allergy.getProducingArea());
+    form.setAnaExperience(allergy.getAnaExperience());
+    form.setAnaRisk(allergy.getAnaRisk());
+    form.setComment(allergy.getComment());
+    form.setAllergenExamples(allergy.getAllergenExamples());
+
+    java.util.List<jp.kobe_u.cs27.allergydataservice.domain.entity.AllergicSymptom> symptoms = allergicSymptomService.getSymptoms(reactionid);
+    if (symptoms != null) {
+        java.util.List<AllergicSymptomForm> symptomForms = new java.util.ArrayList<>();
+        for (jp.kobe_u.cs27.allergydataservice.domain.entity.AllergicSymptom symptom : symptoms) {
+            AllergicSymptomForm symptomForm = new AllergicSymptomForm();
+            symptomForm.setSymptom(symptom.getSymptom());
+            symptomForm.setReactionTime(symptom.getReactionTime());
+            symptomForm.setFeature(symptom.getFeature());
+            symptomForms.add(symptomForm);
+        }
+        form.setSymptomForms(symptomForms);
     }
-    model.addAttribute(
-      "reactionid",
-      reactionid);
+    model.addAttribute("allergicReactionForm", form);
+
+    // --- 2. isGroup フラグの判定 ---
+    boolean isGroup = (allergy.getAllergenExamples() != null && !allergy.getAllergenExamples().isEmpty());
+    model.addAttribute("isGroup", isGroup);
+
+    // --- 3. allergenName の判定 (ユーザー指摘箇所) ---
+    if (allergy.getAllergenid() != null) {
+      model.addAttribute("allergenName", allergenService.getAllergenByAllergenid(allergy.getAllergenid()).getAllergenName());
+    } else {
+      model.addAttribute("allergenName", allergy.getAllergenNameByUser());
+    }
+
+    // --- 4. その他の個別属性の追加 ---
+    model.addAttribute("uid", allergy.getUid());
+    model.addAttribute("allergenid", allergy.getAllergenid());
+    model.addAttribute("allergenNameByUser", allergy.getAllergenNameByUser());
+    model.addAttribute("reactionid", reactionid);
+
     return "foodAllergyEditer";
   }
 

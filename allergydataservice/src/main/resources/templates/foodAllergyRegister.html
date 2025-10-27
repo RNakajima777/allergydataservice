@@ -316,6 +316,11 @@
           <input name="allergenid" th:value="${allergenid}" type="hidden">
           <input name="allergenNameByUser" th:value="${allergenNameByUser}" type="hidden">
           
+          <div th:if="${isGroup}" class="text-form">
+            <label for="allergenExamples">具体的なアレルゲン名を列挙してください:</label>
+            <textarea id="allergenExamples" th:field="*{allergenExamples}" placeholder="例: AAA、BBB、CCC等" th:required="${isGroup}"></textarea>
+          </div>
+
           <div class="ana-options">
               <label>コンタミ(製造過程におけるアレルゲンの微量混入)の可否:</label>
               <div class="option-item">
@@ -393,6 +398,8 @@
             <label for="yesandno">どちらともいえない</label>
             </div>
           </div>
+
+          
 
           <div class="text-form">
             <label for="comment">その他の追記事項(あれば):</label>

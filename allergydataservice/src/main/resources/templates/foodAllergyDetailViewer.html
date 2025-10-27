@@ -109,6 +109,11 @@
     <h1>アレルギー反応詳細</h1>
     <h2>登録アレルゲン: <span th:text="${allergenName}"></span></h2>
 
+    <div class="form-group" th:if="${allergy.allergenExamples != null and !allergy.allergenExamples.isEmpty()}">
+      <label>具体的なアレルゲン名:</label>
+      <span th:text="${allergy.allergenExamples}"></span>
+    </div>
+
     <div class="form-group">
       <label>コンタミの可否:</label>
       <span th:if="${allergy.contamination == 1}">OK</span>

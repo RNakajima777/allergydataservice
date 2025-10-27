@@ -225,7 +225,11 @@
   
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-      addSymptomForm();
+      //const symptomFormDiv = document.getElementById("allergicsymptom");
+      // 既に症状フォームが存在しない場合のみ、空のフォームを追加する
+      //if (symptomFormDiv.children.length === 0) {
+      //  addSymptomForm();
+      //}
     });
 
     function addSymptomForm() {
@@ -308,6 +312,11 @@
           <input name="allergenid" th:value="${allergenid}" type="hidden">
           <input name="allergenNameByUser" th:value="${allergenNameByUser}" type="hidden">
           
+          <div th:if="${isGroup}" class="text-form">
+            <label for="allergenExamples">具体的なアレルゲン名を列挙してください:</label>
+            <textarea id="allergenExamples" th:field="*{allergenExamples}" placeholder="例: りんご, もも, さくらんぼ" th:required="${isGroup}"></textarea>
+          </div>
+
           <div class="ana-options">
               <label>コンタミ(製造過程におけるアレルゲンの微量混入)の可否:</label>
               <div class="option-item">
@@ -340,9 +349,42 @@
 
           <div class="text-form">
             <label for="allergicsymptom">反応の症状:</label>
-                <div id="allergicsymptom">
-                    <!-- 動的に症状フォームをここに追加 -->
+            <div id="allergicsymptom">
+              <!-- 既存の症状をサーバーサイドでレンダリング -->
+              <th:block th:each="symptom, iter : *{symptomForms}">
+                <div th:id="'symptom-' + ${iter.index}" class="symptom-form">
+                  <label>症状:</label>
+                  <input type="text" th:field="*{symptomForms[__${iter.index}__].symptom}" required>
+                  
+                  <label>反応時間:</label>
+                  <div class="ana-options">
+                    <div class="option-item">
+                      <input type="radio" th:id="'time1-' + ${iter.index}" th:field="*{symptomForms[__${iter.index}__].reactionTime}" value="1">
+                      <label th:for="'time1-' + ${iter.index}">数分～2時間後</label>
+                    </div>
+                    <div class="option-item">
+                      <input type="radio" th:id="'time2-' + ${iter.index}" th:field="*{symptomForms[__${iter.index}__].reactionTime}" value="2">
+                      <label th:for="'time2-' + ${iter.index}">数時間～半日後</label>
+                    </div>
+                    <div class="option-item">
+                      <input type="radio" th:id="'time3-' + ${iter.index}" th:field="*{symptomForms[__${iter.index}__].reactionTime}" value="3">
+                      <label th:for="'time3-' + ${iter.index}">数日後</label>
+                    </div>
+                    <div class="option-item">
+                      <input type="radio" th:id="'time0-' + ${iter.index}" th:field="*{symptomForms[__${iter.index}__].reactionTime}" value="0">
+                      <label th:for="'time0-' + ${iter.index}">不明</label>
+                    </div>
+                  </div>
+
+                  <label>反応に付随する特徴:</label>
+                  <textarea th:field="*{symptomForms[__${iter.index}__].feature}"></textarea>
+                  
+                  <div class="delete-button-wrapper">
+                    <button type="button" th:onclick="'removeSymptomForm(' + ${iter.index} + ')'">この症状を削除</button>
+                  </div>
                 </div>
+              </th:block>
+            </div>
             <button type="button" onclick="addSymptomForm()">症状を追加</button>
           </div>
 

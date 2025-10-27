@@ -38,7 +38,7 @@ public class AllergenService {
   private final UserService userService;
 
   /**
-   * アレルギー反応を記録する
+   * アレルゲンを記録する
    *
    * @param form AllergenForm
    * @return 記録したアレルゲンデータ
@@ -51,7 +51,8 @@ public class AllergenService {
         null,
         form.getAllergenType(),
         form.getAllergenName(),
-        form.getFoodFamily()
+        form.getFoodFamily(), 
+        form.isAllergenGroup()
         ));
   }
 
@@ -78,6 +79,11 @@ public class AllergenService {
     return allergen.findByAllergenid(allergenid);
   }
 
+  // グループ化されたアレルゲンのみをリストで返す
+  public List<Allergen> getGroupAllergens() {
+    return allergen.findByAllergenGroup(true);
+  }
+
   // 該当IDを持つアレルゲンに対し、設定編集フォームに入力された内容を新たに保存する
   public Allergen updateAllergen(Long allergenid, AllergenForm form) {  
     Allergen newAllergen = new Allergen();
@@ -85,6 +91,7 @@ public class AllergenService {
     newAllergen.setAllergenType(form.getAllergenType());
     newAllergen.setAllergenName(form.getAllergenName());
     newAllergen.setFoodFamily(form.getFoodFamily());
+    newAllergen.setAllergenGroup(form.isAllergenGroup());
 
     return allergen.save(newAllergen);
   }

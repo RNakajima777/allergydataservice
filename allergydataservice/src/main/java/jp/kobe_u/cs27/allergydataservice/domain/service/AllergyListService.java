@@ -64,7 +64,7 @@ public class AllergyListService {
     for (AllergicReaction foodReaction : foodReactions) {
       StringBuilder notes = new StringBuilder();
 
-      if ((!"なし".equals(foodReaction.getQuantity())) | (!"なし".equals(foodReaction.getProducingArea())) | (!"なし".equals(foodReaction.getComment()))) {
+      if ((!"なし".equals(foodReaction.getQuantity())) | (!"なし".equals(foodReaction.getProducingArea())) | (!"なし".equals(foodReaction.getComment())) | (foodReaction.getAllergenExamples() != null && !foodReaction.getAllergenExamples().isEmpty())) {
         if(foodReaction.getAllergenid() != null) {
           notes.append(allergenService.getAllergenByAllergenid(foodReaction.getAllergenid()).getAllergenName()).append("に関する特記事項").append("\n");
         } else {
@@ -72,6 +72,9 @@ public class AllergyListService {
         }
       }
 
+      if (foodReaction.getAllergenExamples() != null && !foodReaction.getAllergenExamples().isEmpty()) {
+        notes.append("具体的なアレルゲン:").append(foodReaction.getAllergenExamples()).append("\n");
+      }
       if (!"なし".equals(foodReaction.getQuantity())) {
           notes.append("分量:").append(foodReaction.getQuantity()).append("\n");
       }
