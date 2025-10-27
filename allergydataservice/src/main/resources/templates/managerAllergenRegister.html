@@ -44,6 +44,10 @@
       margin-bottom: 0.5rem;
       display: block;
     }
+    .d-flex label {
+      display: inline;
+      margin-bottom: 0;
+    }
     label.required::before {
       content: '*';
       color: red;
@@ -142,6 +146,11 @@
       <div>
         <label for="foodFamily">アレルゲンの分類:</label>
         <input type="text" id="foodFamily" th:field="*{foodFamily}" />
+      </div>
+
+      <div class="d-flex align-items-center mb-3">
+        <label for="allergenGroup" class="me-2 mb-0">グループとして登録する</label>
+        <input type="checkbox" class="form-check-input" id="allergenGroup" th:field="*{allergenGroup}">
       </div>
 
       <div>

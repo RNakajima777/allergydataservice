@@ -62,7 +62,7 @@
         }
 
         .status-ok, .status-low {
-            color: #4fd64f; /* 落ち着いた緑 */
+            color: #28a745; /* 落ち着いた緑, 旧: #4fd64f */
             font-weight: bold;
         }
 
@@ -73,6 +73,10 @@
 
         .status-uncertain {
             color: #f0ad4e; /* 見やすい黄色 */
+            font-weight: bold;
+        }
+
+        .status-default {
             font-weight: bold;
         }
 
@@ -99,6 +103,16 @@
         .btn-tsuiki.active {
             background-color: #007bff;
             color: white !important; /* ホバー時の文字色を確実に白にする */
+        }
+
+        .btn-group-allergen {
+            color: #28a745; /* 緑色 */
+            border-color: #28a745; /* 緑色 */
+        }
+
+        .btn-group-allergen:hover {
+            background-color: #28a745; /* 緑色 */
+            color: white !important;
         }
 
         .button-container {
@@ -201,20 +215,21 @@
             <tr th:each="reaction, iterStat : ${reactions}">
                 <td>
                     <a th:href="@{/data/show/food/{reactionid}(reactionid=${reaction.reactionid})}"
-                       class="btn-tsuiki">
+                       class="btn-tsuiki"
+                       th:classappend="${reaction.extraNotes != null and #strings.contains(reaction.extraNotes, '具体的なアレルゲン:')} ? 'btn-group-allergen' : ''">
                         <span th:text="${reaction.allergenName}"></span>
                     </a>
                 </td>
                 <td th:switch="${reaction.anaRisk}">
                     <span th:case="1" class="status-high">高い</span>
                     <span th:case="2" class="status-low">低い</span>
-                    <span th:case="0">不明</span>
+                    <span th:case="0" class="status-default">不明</span>
                     <span th:case="9" class="status-uncertain">微妙</span>
                 </td>
                 <td th:switch="${reaction.contamination}">
                     <span th:case="1" class="status-ok">可</span>
                     <span th:case="2" class="status-ng">否</span>
-                    <span th:case="0">不明</span>
+                    <span th:case="0" class="status-default">不明</span>
                     <span th:case="9" class="status-uncertain">微妙</span>
                 </td>
                 <td>

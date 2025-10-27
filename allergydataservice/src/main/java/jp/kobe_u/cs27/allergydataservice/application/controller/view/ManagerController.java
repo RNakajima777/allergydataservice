@@ -100,8 +100,15 @@ public class ManagerController {
   //アレルゲン編集画面に移動する
   @GetMapping("/manager/allergen/edit/{allergenid}")
   public String editAllergen(Model model, @PathVariable("allergenid") Long allergenid) {
-    model.addAttribute("allergen", allergenService.getAllergenByAllergenid(allergenid));
-    model.addAttribute(new AllergenForm());
+    jp.kobe_u.cs27.allergydataservice.domain.entity.Allergen allergen = allergenService.getAllergenByAllergenid(allergenid);
+    AllergenForm form = new AllergenForm();
+    form.setAllergenType(allergen.getAllergenType());
+    form.setAllergenName(allergen.getAllergenName());
+    form.setFoodFamily(allergen.getFoodFamily());
+    form.setAllergenGroup(allergen.isAllergenGroup());
+
+    model.addAttribute("allergen", allergen);
+    model.addAttribute("allergenForm", form);
     return "managerAllergenEditer";
   }
 

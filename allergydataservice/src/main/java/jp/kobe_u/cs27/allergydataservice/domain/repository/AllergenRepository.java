@@ -22,4 +22,6 @@ public interface AllergenRepository extends CrudRepository<Allergen, Long> {
     List<Allergen> findByAllergenNameIn(List<String> allergenNames);
     
     boolean existsByAllergenName(String allergenName);
+
+    List<Allergen> findByAllergenGroup(boolean allergenGroup);
 }

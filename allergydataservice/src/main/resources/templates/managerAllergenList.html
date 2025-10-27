@@ -70,14 +70,18 @@
         }
     
         th:nth-child(3), td:nth-child(3) { /* アレルゲン名列 */
-            width: 35%;
+            width: 30%;
         }
     
         th:nth-child(4), td:nth-child(4) { /* 食品ファミリー列 */
-            width: 25%;
+            width: 20%;
+        }
+
+        th:nth-child(5), td:nth-child(5) { /* グループ列 */
+            width: 10%;
         }
     
-        th:nth-child(5), td:nth-child(5) { /* 操作列 */
+        th:nth-child(6), td:nth-child(6) { /* 操作列 */
             width: 20%;
         }
     
@@ -152,6 +156,7 @@
                     <th>アレルゲンタイプ</th>
                     <th>アレルゲン名</th>
                     <th>アレルゲンの分類</th>
+                    <th>グループ</th>
                     <th>操作</th>
                 </tr>
             </thead>
@@ -168,6 +173,7 @@
                     </td>
                     <td th:text="${allergen.allergenName}"></td>
                     <td th:text="${allergen.foodFamily}"></td>
+                    <td th:text="${allergen.isAllergenGroup() ? 1 : 0}"></td>
                     <td>
                         <div class="btn-group">
                             <a th:href="@{/manager/allergen/edit/{allergenid}(allergenid=${allergen.allergenid})}" 

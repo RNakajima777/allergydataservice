@@ -60,5 +60,8 @@ public class AllergicReactionForm {
 
     //その他
     private String comment;
+
+    //具体的なアレルゲン名
+    private String allergenExamples;
     
 }

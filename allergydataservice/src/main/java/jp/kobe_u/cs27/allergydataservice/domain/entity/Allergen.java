@@ -25,4 +25,7 @@ public class Allergen {
 
     // 食品の分類
     private String foodFamily;
+
+    // グループかどうかのフラグ
+    private boolean allergenGroup;
 }

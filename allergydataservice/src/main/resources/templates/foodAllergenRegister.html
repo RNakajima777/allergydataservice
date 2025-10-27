@@ -157,6 +157,17 @@
     .input-group button:hover {
       background-color: #0056b3;
     }
+
+    .group-allergen-buttons button {
+        background-color: white;
+        color: #28a745; /* 緑色 */
+        border-color: #28a745; /* 緑色 */
+    }
+
+    .group-allergen-buttons button:hover {
+        background-color: #28a745; /* 緑色 */
+        color: white;
+    }
   </style>
   <script>
     function toggleList(listId, btn) {
@@ -389,6 +400,22 @@
 
     <div class="divider"></div>
 
+    <!-- グループアレルゲンの表示 -->
+    <h3>アレルゲンをグループで登録したい場合:</h3>
+    <ul class="allergen-buttons group-allergen-buttons">
+      <th:block th:each="allergen : ${groupAllergens}">
+        <li>
+          <form method="get" th:action="@{/allergy/add/food/allergicreaction}" th:object="${allergicReactionForm}">
+            <input type="hidden" name="uid" th:value="${uid}" />
+            <input type="hidden" name="allergenid" th:value="${allergen.allergenid}" />
+            <button type="submit">[[${allergen.allergenName}]]</button>
+          </form>
+        </li>
+      </th:block>
+    </ul>
+
+    <div class="divider"></div>
+
 
     <!-- 新しいアレルゲンの登録 -->
     <h3>登録したいアレルゲンが存在しない場合:</h3>
@@ -400,6 +427,10 @@
       <div class="input-group">
         <input type="text" name="allergenNameByUser" placeholder="例: 卵" required maxlength="20" />
         <button type="submit">このアレルゲンで登録</button>
+      </div>
+      <div class="form-check mt-2">
+        <input type="checkbox" name="isGroup" value="true" class="form-check-input" id="isGroupCheck">
+        <label class="form-check-label" for="isGroupCheck">グループとして登録する</label>
       </div>
     </form>
 
