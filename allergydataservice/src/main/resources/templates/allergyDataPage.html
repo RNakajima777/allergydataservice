@@ -80,6 +80,7 @@
             font-weight: bold;
         }
 
+        /* 追記ボタン(あり)のスタイル (変更なし) */
         .btn-tsuiki {
             display: inline-block; /* aタグでもボタンのように振る舞うようにする */
             padding: 0.4rem 1rem;
@@ -105,14 +106,50 @@
             color: white !important; /* ホバー時の文字色を確実に白にする */
         }
 
-        .btn-group-allergen {
-            color: #28a745; /* 緑色 */
-            border-color: #28a745; /* 緑色 */
+        /* アレルゲン名ボタンの新しいスタイル */
+        .allergen-name-button {
+            display: block;
+            width: 100%;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            border-radius: 0.5rem;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-decoration: none;
+            transition: all 0.2s ease-in-out;
+            border: 2px solid;
+            box-sizing: border-box;
         }
 
-        .btn-group-allergen:hover {
-            background-color: #28a745; /* 緑色 */
-            color: white !important;
+        .allergen-name-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* 通常のアレルゲンボタンの色 */
+        .allergen-name-button {
+            background-color: white;
+            color: #007bff;
+            border-color: #007bff;
+        }
+
+        .allergen-name-button:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        /* グループアレルゲンボタンの色 */
+        .allergen-name-button.group {
+            background-color: white;
+            color: #28a745;
+            border-color: #28a745;
+        }
+
+        .allergen-name-button.group:hover {
+            background-color: #28a745;
+            color: white;
         }
 
         .button-container {
@@ -156,6 +193,11 @@
                 padding: 0.5rem;
             }
 
+            th {
+                padding-left: 0.2rem;
+                padding-right: 0.2rem;
+            }
+
             h2 {
                 font-size: 1.3rem;
             }
@@ -167,9 +209,9 @@
 
             /* スマホ表示時の列幅を指定 */
             th:nth-child(1), td:nth-child(1) { width: 34%; } /* アレルギー */
-            th:nth-child(2), td:nth-child(2) { width: 24%; } /* 反応リスク */
-            th:nth-child(3), td:nth-child(3) { width: 20%; } /* コンタミ */
-            th:nth-child(4), td:nth-child(4) { width: 22%; } /* 追記 */
+            th:nth-child(2), td:nth-child(2) { width: 19%; } /* コンタミ */
+            th:nth-child(3), td:nth-child(3) { width: 28%; } /* 重反応リスク */
+            th:nth-child(4), td:nth-child(4) { width: 19%; } /* 追記 */
         }
     </style>
 
@@ -184,10 +226,29 @@
             }
         }
 
+        function adjustFontSizes() {
+            const buttons = document.querySelectorAll('.allergen-name-button');
+            const minFontSizeRem = 0.6;
+            const defaultFontSizeRem = 0.9;
+
+            buttons.forEach(button => {
+                button.style.fontSize = defaultFontSizeRem + 'rem';
+                let currentFontSizeRem = defaultFontSizeRem;
+                if (button.clientWidth > 0) {
+                    while (button.scrollWidth > button.clientWidth && currentFontSizeRem > minFontSizeRem) {
+                        currentFontSizeRem -= 0.05;
+                        button.style.fontSize = currentFontSizeRem + 'rem';
+                    }
+                }
+            });
+        }
+
         window.onload = function () {
             const rows = document.querySelectorAll(".extra-notes-row");
             rows.forEach(row => row.style.display = "none");
+            adjustFontSizes();
         };
+        window.addEventListener('resize', adjustFontSizes);
     </script>
 </head>
 <body>
@@ -206,50 +267,52 @@
         <thead>
             <tr>
                 <th>アレルギー</th>
-                <th>反応リスク</th>
                 <th>コンタミ</th>
+                <th>重反応リスク</th>
                 <th>追記</th>
             </tr>
         </thead>
         <tbody>
-            <tr th:each="reaction, iterStat : ${reactions}">
-                <td>
-                    <a th:href="@{/data/show/food/{reactionid}(reactionid=${reaction.reactionid})}"
-                       class="btn-tsuiki"
-                       th:classappend="${reaction.extraNotes != null and #strings.contains(reaction.extraNotes, '具体的なアレルゲン:')} ? 'btn-group-allergen' : ''">
-                        <span th:text="${reaction.allergenName}"></span>
-                    </a>
-                </td>
-                <td th:switch="${reaction.anaRisk}">
-                    <span th:case="1" class="status-high">高い</span>
-                    <span th:case="2" class="status-low">低い</span>
-                    <span th:case="0" class="status-default">不明</span>
-                    <span th:case="9" class="status-uncertain">微妙</span>
-                </td>
-                <td th:switch="${reaction.contamination}">
-                    <span th:case="1" class="status-ok">可</span>
-                    <span th:case="2" class="status-ng">否</span>
-                    <span th:case="0" class="status-default">不明</span>
-                    <span th:case="9" class="status-uncertain">微妙</span>
-                </td>
-                <td>
-                    <button th:if="${reaction.extraNotes != null and !reaction.extraNotes.isEmpty()}"
-                            th:id="'toggle-btn-' + ${iterStat.index}"
-                            class="btn-tsuiki"
-                            th:text="'あり'"
-                            th:onclick="|toggleExtraNotes(${iterStat.index})|">
-                    </button>
-                    <span th:if="${reaction.extraNotes == null or reaction.extraNotes.isEmpty()}">なし</span>
-                </td>
-            </tr>
-
-            <tr th:each="reaction, iterStat : ${reactions}"
-                th:id="'extra-notes-row' + ${iterStat.index}"
-                class="extra-notes-row">
-                <td colspan="4" class="extra-notes-cell" th:utext="${reaction.extraNotes}">
-                    ここに追記が表示されます。
-                </td>
-            </tr>
+            <th:block th:each="reaction, iterStat : ${reactions}">
+                <tr>
+                    <td>
+                        <a th:href="@{/data/show/food/{reactionid}(reactionid=${reaction.reactionid})}"
+                           class="allergen-name-button"
+                           th:classappend="${reaction.extraNotes != null and #strings.contains(reaction.extraNotes, '具体的なアレルゲン:')} ? 'group' : ''">
+                            <span th:text="${reaction.allergenName}"></span>
+                        </a>
+                    </td>
+                    <td th:switch="${reaction.contamination}">
+                        <span th:case="1" class="status-ok">可</span>
+                        <span th:case="2" class="status-ng">否</span>
+                        <span th:case="0" class="status-default">不明</span>
+                        <span th:case="9" class="status-uncertain">微妙</span>
+                    </td>
+                    <td th:switch="${reaction.anaRisk}">
+                        <span th:case="1" class="status-high">高い</span>
+                        <span th:case="2" class="status-low">低い</span>
+                        <span th:case="0" class="status-default">不明</span>
+                        <span th:case="9" class="status-uncertain">微妙</span>
+                    </td>
+                    <td>
+                        <button th:if="${reaction.extraNotes != null and !reaction.extraNotes.isEmpty()}"
+                                th:id="'toggle-btn-' + ${iterStat.index}"
+                                class="btn-tsuiki"
+                                th:text="'あり'"
+                                th:onclick="|toggleExtraNotes(${iterStat.index})|">
+                        </button>
+                        <span th:if="${reaction.extraNotes == null or reaction.extraNotes.isEmpty()}">なし</span>
+                    </td>
+                </tr>
+                <tr th:if="${reaction.extraNotes != null and !reaction.extraNotes.isEmpty()}"
+                    th:id="'extra-notes-row' + ${iterStat.index}"
+                    class="extra-notes-row">
+                    <td colspan="4" class="extra-notes-cell">
+                        <div th:text="${reaction.allergenName} + 'に関する特記事項'" style="font-weight: bold; font-size: 0.95rem; color: #444; margin-bottom: 0.5rem;"></div>
+                        <div th:utext="${reaction.extraNotes}" style="font-size: 0.9rem; line-height: 1.6;"></div>
+                    </td>
+                </tr>
+            </th:block>
         </tbody>
     </table>
 

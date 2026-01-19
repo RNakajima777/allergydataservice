@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>アレルギー情報</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            background-color: #f4f6f8;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            max-width: 900px;
+            width: 95%;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            margin-top: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        h2 {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #333333;
+            margin-bottom: 1rem;
+        }
+        .button-container {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .btn-emergency {
+            display: inline-block;
+            padding: 0.6rem 1.2rem;
+            background-color: #d9534f;
+            color: white;
+            border: 1px solid black;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .btn-emergency:hover {
+            background-color: #c9302c;
+        }
+        .category-title {
+            width: 100%;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.5rem;
+            font-size: 1.3rem;
+            color: #333;
+        }
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            position: relative;
+        }
+        .allergy-card {
+            border: 1px solid #000;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            background-color: #fff;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .allergy-card:hover {
+            transform: translateY(-5px);
+        }
+        /* 元の仕様：リスク別に枠線の色を変更
+        .card-risk-high { border-color: #d9534f; }
+        .card-risk-medium { border-color: #f0ad4e; }
+        .card-risk-low { border-color: #28a745; }
+        */
+
+        
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .title-button {
+            display: inline-block;
+            padding: 0.2em 0.8em; /* Use em for scalable padding */
+            border: 1px solid #007bff;
+            border-radius: 0.25rem;
+            color: #007bff;
+            text-decoration: none;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .title-button:hover {
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+        }
+        .card-illustration {
+            width: 100%;
+            height: 80px;
+            background-color: #ffffff;
+            margin: 0.5rem 0;
+            border-radius: 0.25rem;
+            object-fit: contain;
+        }
+        .card-details {
+            font-size: 0.9rem;
+            flex-grow: 1;
+        }
+        .card-details p {
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: center;
+        }
+        .risk-row {
+            gap: 0.5em;
+            white-space: nowrap;
+        }
+        .notes-row {
+            justify-content: flex-start;
+            gap: 0.5rem;
+        }
+        .risk-text-high { color: #d9534f; font-weight: bold; }
+        .risk-text-medium { color: #f0ad4e; font-weight: bold; }
+        .risk-text-low { color: #28a745; font-weight: bold; }
+        .no-data {
+            color: #888;
+            margin-left: 1rem;
+        }
+        .notes-toggle-button {
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #007bff;
+            text-decoration: none;
+            padding: 0.2rem 0.5rem;
+            border: 1px solid #007bff;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .notes-toggle-button:hover, .notes-toggle-button.active {
+            background-color: #007bff;
+            color: white;
+        }
+        .notes-expansion-area {
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+            animation: fadeIn 0.3s ease;
+        }
+        .notes-expansion-area h4 {
+            margin-top: 0;
+            font-size: 1.1rem;
+            color: #333;
+        }
+        .notes-expansion-area .notes-content {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+    <script>
+        function adjustCardTitleFontSizes() {
+            const titles = document.querySelectorAll('.card-title');
+            const minFontSizeRem = 0.8;
+            const defaultFontSizeRem = 1.2;
+            titles.forEach(title => {
+                title.style.fontSize = defaultFontSizeRem + 'rem';
+                let currentFontSizeRem = defaultFontSizeRem;
+                if (title.clientWidth > 0 && title.scrollWidth > title.clientWidth) {
+                    while (title.scrollWidth > title.clientWidth && currentFontSizeRem > minFontSizeRem) {
+                        currentFontSizeRem -= 0.05;
+                        title.style.fontSize = currentFontSizeRem + 'rem';
+                    }
+                }
+            });
+        }
+
+        function handleNotesToggle(event) {
+            if (!event.target.matches('.notes-toggle-button')) {
+                return;
+            }
+            event.preventDefault();
+
+            const button = event.target;
+            const card = button.closest('.allergy-card');
+            const cardContainer = card.closest('.card-container');
+            const reactionId = card.dataset.reactionId;
+            const expansionId = `notes-expansion-${reactionId}`;
+            const existingExpansion = document.getElementById(expansionId);
+
+            // Toggle 'active' state on current button
+            button.classList.toggle('active');
+
+            if (existingExpansion) {
+                existingExpansion.remove();
+            } else {
+                const allergenName = card.dataset.allergenName;
+                const notes = card.dataset.notes;
+
+                const expansionArea = document.createElement('div');
+                expansionArea.id = expansionId;
+                expansionArea.className = 'notes-expansion-area';
+
+                const title = document.createElement('h4');
+                title.textContent = `${allergenName}に関する特記事項`;
+
+                const content = document.createElement('div');
+                content.className = 'notes-content';
+                content.innerHTML = notes.replace(/\n/g, '<br>');
+
+                expansionArea.appendChild(title);
+                expansionArea.appendChild(content);
+
+                cardContainer.parentNode.insertBefore(expansionArea, cardContainer.nextSibling);
+            }
+        }
+
+        window.addEventListener('load', () => {
+            adjustCardTitleFontSizes();
+            document.querySelector('.container').addEventListener('click', handleNotesToggle);
+        });
+        window.addEventListener('resize', adjustCardTitleFontSizes);
+    </script>
+</head>
+<body>
+
+<div class="container">
+
+    <h2 th:text="${username} + ' さんのアレルギー'">〇〇さんのアレルギー</h2>
+
+    <div class="button-container">
+        <a th:href="@{/data/show/emergency/{uid}(uid=${uid})}" class="btn-emergency">緊急時対応</a>
+    </div>
+
+    <!-- カテゴリ: コンタミNG -->
+    <h3 class="category-title">コンタミネーションNG</h3>
+    <div class="card-container" id="contam-ng-container" th:if="${not #lists.isEmpty(contamNgReactions)}">
+        <div th:each="reaction : ${contamNgReactions}"
+             class="allergy-card"
+             th:classappend="${reaction.anaRisk == 1 ? 'card-risk-high' : (reaction.anaRisk == 2 ? 'card-risk-low' : 'card-risk-medium')}"
+             th:attr="data-reaction-id=${reaction.reactionid}, data-allergen-name=${reaction.allergenName}, data-notes=${reaction.extraNotes}">
+            
+            <div class="card-title">
+                <a th:href="@{/data/show/food/{reactionid}(reactionid=${reaction.reactionid})}" class="title-button">
+                    <span th:text="${reaction.allergenName}">アレルギー名</span>
+                </a>
+            </div>
+            <img th:src="@{/images/allergens/{name}.png(name=${reaction.allergenName})}"
+                 th:alt="${reaction.allergenName}"
+                 class="card-illustration"
+                 onerror="this.onerror=null; this.src='/images/allergens/NoImage.png';">
+            <div class="card-details">
+                <p class="risk-row">
+                    <strong>重反応リスク:</strong>
+                    <span th:switch="${reaction.anaRisk}"
+                          th:classappend="${reaction.anaRisk == 1 ? 'risk-text-high' : (reaction.anaRisk == 2 ? 'risk-text-low' : 'risk-text-medium')}">
+                        <span th:case="1">高い</span><span th:case="9">微妙</span><span th:case="0">不明</span><span th:case="2">低い</span>
+                    </span>
+                </p>
+                <p class="notes-row">
+                    <strong>特記事項:</strong>
+                    <a href="#" class="notes-toggle-button" th:if="${reaction.extraNotes != null and !#strings.isEmpty(reaction.extraNotes)}">あり</a>
+                    <span th:unless="${reaction.extraNotes != null and !#strings.isEmpty(reaction.extraNotes)}">なし</span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <p th:if="${#lists.isEmpty(contamNgReactions)}" class="no-data">該当するアレルギーはありません。</p>
+
+    <!-- カテゴリ: コンタミ不明/微妙 -->
+    <h3 class="category-title">コンタミネーション 不明・微妙</h3>
+    <div class="card-container" id="contam-uncertain-container" th:if="${not #lists.isEmpty(contamUncertainReactions)}">
+        <div th:each="reaction : ${contamUncertainReactions}"
+             class="allergy-card"
+             th:classappend="${reaction.anaRisk == 1 ? 'card-risk-high' : (reaction.anaRisk == 2 ? 'card-risk-low' : 'card-risk-medium')}"
+             th:attr="data-reaction-id=${reaction.reactionid}, data-allergen-name=${reaction.allergenName}, data-notes=${reaction.extraNotes}">
+
+            <div class="card-title">
+                <a th:href="@{/data/show/food/{reactionid}(reactionid=${reaction.reactionid})}" class="title-button">
+                    <span th:text="${reaction.allergenName}">アレルギー名</span>
+                </a>
+            </div>
+            <img th:src="@{/images/allergens/{name}.png(name=${reaction.allergenName})}"
+                 th:alt="${reaction.allergenName}"
+                 class="card-illustration"
+                 onerror="this.onerror=null; this.src='/images/allergens/NoImage.png';">
+            <div class="card-details">
+                <p class="risk-row">
+                    <strong>重反応リスク:</strong>
+                    <span th:switch="${reaction.anaRisk}"
+                          th:classappend="${reaction.anaRisk == 1 ? 'risk-text-high' : (reaction.anaRisk == 2 ? 'risk-text-low' : 'risk-text-medium')}">
+                        <span th:case="1">高い</span><span th:case="9">微妙</span><span th:case="0">不明</span><span th:case="2">低い</span>
+                    </span>
+                </p>
+                <p class="notes-row">
+                    <strong>特記事項:</strong>
+                    <a href="#" class="notes-toggle-button" th:if="${reaction.extraNotes != null and !#strings.isEmpty(reaction.extraNotes)}">あり</a>
+                    <span th:unless="${reaction.extraNotes != null and !#strings.isEmpty(reaction.extraNotes)}">なし</span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <p th:if="${#lists.isEmpty(contamUncertainReactions)}" class="no-data">該当するアレルギーはありません。</p>
+
+    <!-- カテゴリ: コンタミOK -->
+    <h3 class="category-title">コンタミネーションOK</h3>
+    <div class="card-container" id="contam-ok-container" th:if="${not #lists.isEmpty(contamOkReactions)}">
+        <div th:each="reaction : ${contamOkReactions}"
+             class="allergy-card"
+             th:classappend="${reaction.anaRisk == 1 ? 'card-risk-high' : (reaction.anaRisk == 2 ? 'card-risk-low' : 'card-risk-medium')}"
+             th:attr="data-reaction-id=${reaction.reactionid}, data-allergen-name=${reaction.allergenName}, data-notes=${reaction.extraNotes}">
+
+            <div class="card-title">
+                <a th:href="@{/data/show/food/{reactionid}(reactionid=${reaction.reactionid})}" class="title-button">
+                    <span th:text="${reaction.allergenName}">アレルギー名</span>
+                </a>
+            </div>
+            <img th:src="@{/images/allergens/{name}.png(name=${reaction.allergenName})}"
+                 th:alt="${reaction.allergenName}"
+                 class="card-illustration"
+                 onerror="this.onerror=null; this.src='/images/allergens/NoImage.png';">
+            <div class="card-details">
+                <p class="risk-row">
+                    <strong>重反応リスク:</strong>
+                    <span th:switch="${reaction.anaRisk}"
+                          th:classappend="${reaction.anaRisk == 1 ? 'risk-text-high' : (reaction.anaRisk == 2 ? 'risk-text-low' : 'risk-text-medium')}">
+                        <span th:case="1">高い</span><span th:case="9">微妙</span><span th:case="0">不明</span><span th:case="2">低い</span>
+                    </span>
+                </p>
+                <p class="notes-row">
+                    <strong>特記事項:</strong>
+                    <a href="#" class="notes-toggle-button" th:if="${reaction.extraNotes != null and !#strings.isEmpty(reaction.extraNotes)}">あり</a>
+                    <span th:unless="${reaction.extraNotes != null and !#strings.isEmpty(reaction.extraNotes)}">なし</span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <p th:if="${#lists.isEmpty(contamOkReactions)}" class="no-data">該当するアレルギーはありません。</p>
+
+</div>
+
+</body>
+</html>
