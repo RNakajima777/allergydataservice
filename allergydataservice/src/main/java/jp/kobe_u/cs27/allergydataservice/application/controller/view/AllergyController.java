@@ -447,6 +447,47 @@ public class AllergyController {
       return "allergyDataPage"; // データを表示するHTML
   }
 
+  @GetMapping("/dataB/{uid}")
+  public String showFoodAllergyDataPageB(
+    Model model,
+    RedirectAttributes attributes,
+    @PathVariable("uid") String uid){
+      model.addAttribute("uid", uid);
+      model.addAttribute("username", service.getUser(uid).getUsername());
+
+      List<AllergyDataDTO> allReactions = allergyListService.getAllergyDataByUid(uid);
+    
+      // --- Java側でカテゴリ分類処理を行う ---
+      List<AllergyDataDTO> contamNgList = new java.util.ArrayList<>();
+      List<AllergyDataDTO> contamUncertainList = new java.util.ArrayList<>();
+      List<AllergyDataDTO> contamOkList = new java.util.ArrayList<>();
+
+      if (allReactions != null) {
+          for (AllergyDataDTO dto : allReactions) {
+              if (dto != null) {
+                  switch (dto.getContamination()) {
+                      case 2:
+                          contamNgList.add(dto);
+                          break;
+                      case 0:
+                      case 9:
+                          contamUncertainList.add(dto);
+                          break;
+                      case 1:
+                          contamOkList.add(dto);
+                          break;
+                  }
+              }
+          }
+      }
+      
+      model.addAttribute("contamNgReactions", contamNgList);
+      model.addAttribute("contamUncertainReactions", contamUncertainList);
+      model.addAttribute("contamOkReactions", contamOkList);
+      
+      return "allergyDataPageB";
+  }
+
   //第三者向け表示ページで詳細画面に移動
   @GetMapping("/data/show/food/{reactionid}")
   public String showFoodAllergyDetailDataPage(Model model, @PathVariable("reactionid") Long reactionid) {

@@ -44,18 +44,9 @@
       margin: 1rem 0;
     }
 
+    /* 汎用ボタンのスタイルをリセットまたは調整 */
     button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 0.5rem;
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      margin: 0.5rem;
-    }
-
-    button:hover {
-      background-color: #0056b3;
+      margin: 0; /* 個別のボタンのマージンをリセット */
     }
 
     ul {
@@ -82,32 +73,71 @@
       color: white;
     }
 
-    .allergen-buttons {
-      display: flex;
-      flex-wrap: wrap; /* ボタンが折り返されるように設定 */
-      gap: 0.5rem; /* ボタン間の間隔を維持 */
+    /* --- アレルゲンボタンの新しいスタイル --- */
+    .allergen-buttons, .group-allergen-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 0.5rem;
       padding: 0;
       list-style: none;
+      margin-bottom: 1rem;
     }
 
-    .allergen-buttons li {
-      margin: 0; /* 不要なマージンを排除 */
+    .allergen-buttons li, .group-allergen-buttons li {
+      display: flex;
+    }
+    
+    .allergen-buttons li form, .group-allergen-buttons li form {
+      display: flex;
+      width: 100%;
     }
 
+    .allergen-buttons button, .group-allergen-buttons button {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 0.9rem; /* デフォルトのフォントサイズ */
+      font-weight: 700;
+      border-radius: 0.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      white-space: nowrap; /* 改行を禁止 */
+      overflow: hidden; /* はみ出しを隠す */
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s; /* フォントサイズ変更のアニメーションは除外 */
+      border: 2px solid;
+    }
+
+    .allergen-buttons button:hover, .group-allergen-buttons button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    /* 通常のアレルゲンボタンの色 */
     .allergen-buttons button {
       background-color: white;
       color: #007bff;
-      border: 2px solid #007bff;
-      border-radius: 0.5rem;
-      padding: 0.5rem 1rem;
-      text-align: center;
-      font-weight: 700;
+      border-color: #007bff;
     }
 
     .allergen-buttons button:hover {
       background-color: #007bff;
       color: white;
     }
+
+    /* グループアレルゲンボタンの色 */
+    .group-allergen-buttons button {
+        background-color: white;
+        color: #28a745;
+        border-color: #28a745;
+    }
+
+    .group-allergen-buttons button:hover {
+        background-color: #28a745;
+        color: white;
+    }
+    /* --- スタイルここまで --- */
+
 
     .toggle-header {
       display: flex;
@@ -157,17 +187,6 @@
     .input-group button:hover {
       background-color: #0056b3;
     }
-
-    .group-allergen-buttons button {
-        background-color: white;
-        color: #28a745; /* 緑色 */
-        border-color: #28a745; /* 緑色 */
-    }
-
-    .group-allergen-buttons button:hover {
-        background-color: #28a745; /* 緑色 */
-        color: white;
-    }
   </style>
   <script>
     function toggleList(listId, btn) {
@@ -180,6 +199,43 @@
         btn.textContent = '▽';
       }
     }
+
+    function adjustFontSizes() {
+      const buttons = document.querySelectorAll('.allergen-buttons button, .group-allergen-buttons button');
+      const minFontSizeRem = 0.6; // rem単位での最小フォントサイズ
+      const defaultFontSizeRem = 0.9; // CSSで指定したデフォルトのフォントサイズ
+
+      buttons.forEach(button => {
+        // まずデフォルトのフォントサイズに戻す
+        button.style.fontSize = defaultFontSizeRem + 'rem';
+
+        let currentFontSizeRem = defaultFontSizeRem;
+
+        // scrollWidthがclientWidthより大きい間、フォントサイズを小さくする
+        // clientWidthが0の場合は処理をスキップ（非表示要素など）
+        if (button.clientWidth > 0) {
+          while (button.scrollWidth > button.clientWidth && currentFontSizeRem > minFontSizeRem) {
+            currentFontSizeRem -= 0.05;
+            button.style.fontSize = currentFontSizeRem + 'rem';
+          }
+        }
+      });
+    }
+
+    // ページの読み込み時とウィンドウのリサイズ時にフォントサイズを調整
+    window.addEventListener('DOMContentLoaded', () => {
+      adjustFontSizes();
+
+      // toggleListで表示状態が変わった後にもフォント調整を実行
+      const toggleButtons = document.querySelectorAll('.toggle-header button');
+      toggleButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          // 表示されるまで少し待ってから実行
+          setTimeout(adjustFontSizes, 50);
+        });
+      });
+    });
+    window.addEventListener('resize', adjustFontSizes);
   </script>
 </head>
 <body>
@@ -419,13 +475,13 @@
 
     <!-- 新しいアレルゲンの登録 -->
     <h3>登録したいアレルゲンが存在しない場合:</h3>
-    <h4>登録したいアレルゲンの名前を入力してください</h4>
+    <h4>登録したいアレルゲンの名前を、10文字以内で入力してください</h4>
     <!-- エラーメッセージ表示 -->
     <div th:if="${allergenNameError}" th:text="${allergenNameError}" class="text-danger" style="margin-bottom: 1rem;"></div>
     <form method="get" th:action="@{/allergy/add/food/allergicreaction}" th:object="${allergicReactionForm}">
       <input type="hidden" name="uid" th:value="${uid}" />
       <div class="input-group">
-        <input type="text" name="allergenNameByUser" placeholder="例: 卵" required maxlength="20" />
+        <input type="text" name="allergenNameByUser" placeholder="例: 卵" required maxlength="10" />
         <button type="submit">このアレルゲンで登録</button>
       </div>
       <div class="form-check mt-2">

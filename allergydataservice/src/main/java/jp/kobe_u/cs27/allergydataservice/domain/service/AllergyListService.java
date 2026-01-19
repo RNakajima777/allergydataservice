@@ -66,9 +66,11 @@ public class AllergyListService {
 
       if ((!"なし".equals(foodReaction.getQuantity())) | (!"なし".equals(foodReaction.getProducingArea())) | (!"なし".equals(foodReaction.getComment())) | (foodReaction.getAllergenExamples() != null && !foodReaction.getAllergenExamples().isEmpty())) {
         if(foodReaction.getAllergenid() != null) {
-          notes.append(allergenService.getAllergenByAllergenid(foodReaction.getAllergenid()).getAllergenName()).append("に関する特記事項").append("\n");
+          //場合によっては消す
+          //notes.append(allergenService.getAllergenByAllergenid(foodReaction.getAllergenid()).getAllergenName()).append("に関する特記事項").append("\n");
         } else {
-          notes.append(foodReaction.getAllergenNameByUser()).append("に関する特記事項").append("\n");
+          //場合によっては消す
+          //notes.append(foodReaction.getAllergenNameByUser()).append("に関する特記事項").append("\n");
         }
       }
 
