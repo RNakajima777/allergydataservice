@@ -26,6 +26,19 @@
             margin-top: 1.5rem;
             margin-bottom: 2rem;
         }
+        .section-wrapper {
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+        .section-ng {
+            background-color: #fdecea; /* Light Red */
+        }
+        .section-uncertain {
+            background-color: #fff8e1; /* Light Yellow */
+        }
+        .section-ok {
+            background-color: #e8f5e9; /* Light Green */
+        }
         h2 {
             text-align: center;
             font-size: 1.5rem;
@@ -53,12 +66,31 @@
         }
         .category-title {
             width: 100%;
-            margin-top: 2rem;
+            margin-top: 0rem; /* Reduced from 2rem */
             margin-bottom: 1rem;
             border-bottom: 2px solid #eee;
             padding-bottom: 0.5rem;
-            font-size: 1.3rem;
+            font-size: 1.15rem; /* Reduced from 1.3rem */
             color: #333;
+        }
+        .contam-explanation {
+            font-size: 0.9rem; /* Slightly larger */
+            color: #d9534f; /* Red */
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        .contam-status-ng {
+            color: #d9534f;
+            font-weight: bold;
+        }
+        .contam-status-uncertain {
+            color: #f0ad4e;
+            font-weight: bold;
+        }
+        .contam-status-ok {
+            color: #28a745;
+            font-weight: bold;
         }
         .card-container {
             display: grid;
@@ -256,8 +288,11 @@
         <a th:href="@{/data/show/emergency/{uid}(uid=${uid})}" class="btn-emergency">緊急時対応</a>
     </div>
 
+    <p class="contam-explanation">※コンタミネーション…調理器具や調理工程の共有により、メニュー自体に含まれていないアレルギー物質が意図せず微量混入すること</p>
+
+    <div class="section-wrapper section-ng">
     <!-- カテゴリ: コンタミNG -->
-    <h3 class="category-title">コンタミネーションNG</h3>
+    <h3 class="category-title">コンタミネーション：<span class="contam-status-ng">NG</span></h3>
     <div class="card-container" id="contam-ng-container" th:if="${not #lists.isEmpty(contamNgReactions)}">
         <div th:each="reaction : ${contamNgReactions}"
              class="allergy-card"
@@ -290,9 +325,11 @@
         </div>
     </div>
     <p th:if="${#lists.isEmpty(contamNgReactions)}" class="no-data">該当するアレルギーはありません。</p>
+</div>
 
+    <div class="section-wrapper section-uncertain">
     <!-- カテゴリ: コンタミ不明/微妙 -->
-    <h3 class="category-title">コンタミネーション 不明・微妙</h3>
+    <h3 class="category-title">コンタミネーション：<span class="contam-status-uncertain">不明・微妙</span></h3>
     <div class="card-container" id="contam-uncertain-container" th:if="${not #lists.isEmpty(contamUncertainReactions)}">
         <div th:each="reaction : ${contamUncertainReactions}"
              class="allergy-card"
@@ -325,9 +362,11 @@
         </div>
     </div>
     <p th:if="${#lists.isEmpty(contamUncertainReactions)}" class="no-data">該当するアレルギーはありません。</p>
+</div>
 
+    <div class="section-wrapper section-ok">
     <!-- カテゴリ: コンタミOK -->
-    <h3 class="category-title">コンタミネーションOK</h3>
+    <h3 class="category-title">コンタミネーション：<span class="contam-status-ok">OK</span></h3>
     <div class="card-container" id="contam-ok-container" th:if="${not #lists.isEmpty(contamOkReactions)}">
         <div th:each="reaction : ${contamOkReactions}"
              class="allergy-card"
@@ -360,6 +399,7 @@
         </div>
     </div>
     <p th:if="${#lists.isEmpty(contamOkReactions)}" class="no-data">該当するアレルギーはありません。</p>
+</div>
 
 </div>
 

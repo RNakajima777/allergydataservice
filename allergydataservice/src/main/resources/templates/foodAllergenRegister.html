@@ -475,7 +475,7 @@
 
     <!-- 新しいアレルゲンの登録 -->
     <h3>登録したいアレルゲンが存在しない場合:</h3>
-    <h4>登録したいアレルゲンの名前を、10文字以内で入力してください</h4>
+    <h4>登録したいアレルゲンもしくはグループの名前を、10文字以内で入力してください</h4>
     <!-- エラーメッセージ表示 -->
     <div th:if="${allergenNameError}" th:text="${allergenNameError}" class="text-danger" style="margin-bottom: 1rem;"></div>
     <form method="get" th:action="@{/allergy/add/food/allergicreaction}" th:object="${allergicReactionForm}">
