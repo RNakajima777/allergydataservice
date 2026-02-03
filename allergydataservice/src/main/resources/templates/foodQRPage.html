@@ -88,29 +88,26 @@
     <div class="container">
         <h1>アレルギー情報 QRコード</h1>
 
-        <!-- 元の仕様：QRコード1つ 戻RUI-->
-        <!--
+        <!-- 元の仕様：QRコード1つ -->
         <div class="qr-code-container">
             <img th:src="@{${'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + qrDataUrl}}" alt="QR Code">
         </div>
-        -->
 
-        <!-- 新しい仕様：QRコード2つ -->
+        <!--
         <div class="qr-codes-wrapper" style="display: flex; justify-content: center; gap: 2rem; align-items: flex-start; flex-wrap: wrap;">
 
-            <!-- QR Code for /data/{uid} -->
             <div class="qr-code-container" style="text-align: center;">
-                <p style="font-weight: bold;">表示画面A</p>
-                <img th:src="@{${'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + qrDataUrlA}}" alt="QR Code for standard view">
+                <p style="font-weight: bold;">表示画面A</p> A消した
+                <img th:src="@{${'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + qrDataUrl}}" alt="QR Code for standard view">
             </div>
 
-            <!-- QR Code for /dataB/{uid} -->
             <div class="qr-code-container" style="text-align: center;">
-                <p style="font-weight: bold;">表示画面B</p>
-                <img th:src="@{${'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + qrDataUrlB}}" alt="QR Code for simple view">
+                <p style="font-weight: bold;">表示画面B</p> B消した
+                <img th:src="@{${'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + qrDataUrl}}" alt="QR Code for simple view">
             </div>
 
         </div>
+        -->
 
         <div class="form-container">
             <h2>お店対応メモの追加</h2>

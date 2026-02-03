@@ -431,24 +431,24 @@ public class AllergyController {
   }
 
 
+  //@GetMapping("/data/{uid}")
+  //public String showFoodAllergyDataPage(
+  //  Model model,
+  //  RedirectAttributes attributes,
+  //  @PathVariable("uid") String uid){
+  //    model.addAttribute("uid", uid);
+  //    model.addAttribute("username", service.getUser(uid).getUsername());
+
+  //    List<AllergyDataDTO> allergy;
+  //    allergy = allergyListService.getAllergyDataByUid(uid);
+    
+  //    model.addAttribute("reactions", allergy);
+      
+  //    return "allergyDataPage"; // データを表示するHTML
+  //}
+
   @GetMapping("/data/{uid}")
   public String showFoodAllergyDataPage(
-    Model model,
-    RedirectAttributes attributes,
-    @PathVariable("uid") String uid){
-      model.addAttribute("uid", uid);
-      model.addAttribute("username", service.getUser(uid).getUsername());
-
-      List<AllergyDataDTO> allergy;
-      allergy = allergyListService.getAllergyDataByUid(uid);
-    
-      model.addAttribute("reactions", allergy);
-      
-      return "allergyDataPage"; // データを表示するHTML
-  }
-
-  @GetMapping("/dataB/{uid}")
-  public String showFoodAllergyDataPageB(
     Model model,
     RedirectAttributes attributes,
     @PathVariable("uid") String uid){

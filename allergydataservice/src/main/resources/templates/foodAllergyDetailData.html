@@ -204,15 +204,13 @@
       <span th:text="*{allergy.comment}"></span>
     </div>
 
-    <!-- 元の仕様：アレルギー一覧(allergyDataPage.html)に遷移 戻RUI-->
-    <!--
     <form method="get" th:action="@{/data/{uid}(uid=${allergy.uid})}">
       <button class="btn btn-warning" type="submit">もどる</button>
     </form>
-    -->
-
-    <!-- 新しい仕様：前のページに戻る -->
+    
+    <!-- 
     <button type="button" onclick="history.back()" class="btn btn-warning">もどる</button>
+    新しい仕様：前のページに戻る -->
   </div>
 </body>
 </html>
