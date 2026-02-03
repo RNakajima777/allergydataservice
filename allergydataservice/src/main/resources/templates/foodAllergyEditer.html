@@ -314,7 +314,7 @@
           
           <div th:if="${isGroup}" class="text-form">
             <label for="allergenExamples">具体的なアレルゲン名を列挙してください:</label>
-            <textarea id="allergenExamples" th:field="*{allergenExamples}" placeholder="例: りんご, もも, さくらんぼ" th:required="${isGroup}"></textarea>
+            <textarea id="allergenExamples" th:field="*{allergenExamples}" placeholder="例: AAA、BBB、CCC、..." th:required="${isGroup}"></textarea>
           </div>
 
           <div class="ana-options">
