@@ -52,8 +52,31 @@
             max-width: 900px;
             width: 95%;
             height: 100%;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.15) 20%, transparent); /* 薄い影のようなグラデーション */
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.1) 0%, transparent 100%); 
+            position: relative;
         }
+
+        /* 矢印アイコンのスタイル */
+        .scroll-arrow {
+            width: 15px;
+            height: 15px;
+            border-right: 3px solid #999;
+            border-bottom: 3px solid #999;
+            transform: rotate(45deg);
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            margin-left: -7.5px;
+            animation: bounce 2s infinite;
+        }
+
+        /* ぴょこぴょこ動くアニメーション */
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) rotate(45deg); }
+            40% { transform: translateY(-8px) rotate(45deg); }
+            60% { transform: translateY(-4px) rotate(45deg); }
+        }
+
         .section-wrapper {
             padding: 0.75rem 1rem; /* 縦方向を縮小 */
             border-radius: 0.5rem;
@@ -61,7 +84,7 @@
         }
         .section-ng { background-color: #fdecea; }
         .section-uncertain { background-color: #fff8e1; }
-        .section-ok { background-color: #e8f5e9; }
+        .section-ok { background-color: #f5f5f5; }
         h2 {
             text-align: center;
             font-size: 1.5rem;
@@ -105,11 +128,19 @@
         .contam-status-uncertain { color: #f0ad4e; font-weight: bold; }
         .contam-status-ok { color: #28a745; font-weight: bold; }
 
-        /* カードコンテナ: 1列表示に変更 */
+        /* カードコンテナ: デフォルト1列、600px以上で2列 */
         .card-container {
             display: flex;
             flex-direction: column;
             gap: 0.75rem; /* カード間のスペースを縮小 */
+        }
+
+        @media (min-width: 700px) {
+            .card-container {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
         }
 
         /* アレルギーカードの基本スタイル */
@@ -132,7 +163,7 @@
         .card-title-wrapper {
             position: relative;
             width: 100%;
-            margin-bottom: 0.5rem; /* 縮小 */
+            margin-bottom: 0; /* 下マージンを削除 */
             min-height: 2.5em; /* アイコンを配置するため少し高さを確保 */
             display: flex;
             align-items: center;
@@ -173,7 +204,7 @@
 
         /* カード本体 */
         .card-body {
-            /* スタイルはほぼ不要に */
+            margin-top: 0.5rem;
         }
 
         /* 詳細セクション */
@@ -197,7 +228,7 @@
         }
         .risk-text-high { color: #d9534f; font-weight: bold; }
         .risk-text-medium { color: #f0ad4e; font-weight: bold; }
-        .risk-text-low { color: #28a745; font-weight: bold; }
+        .risk-text-low { color: #919191; font-weight: bold; }
 
         /* 特記事項セクション */
         .notes-section {
@@ -328,17 +359,17 @@
 
 <div class="container">
 
-    <h2 th:text="${username} + ' さんのアレルギー'">〇〇さんのアレルギー</h2>
+    <h2 th:text="${username} + ' さんが食べてはいけないアレルゲン一覧'">〇〇さんが食べてはいけないアレルゲン一覧</h2>
 
     <div class="button-container">
         <a th:href="@{/data/show/emergency/{uid}(uid=${uid})}" class="btn-emergency">緊急時対応</a>
     </div>
 
-    <p class="contam-explanation">※コンタミネーション…調理器具や調理工程の共有により、メニュー自体に含まれていないアレルギー物質が意図せず微量混入すること</p>
+    <p class="contam-explanation">※以下のアレルゲンを直接使用する製品・メニューは基本的にNG</p>
 
     <!-- カテゴリ: コンタミNG -->
     <div class="section-wrapper section-ng" th:if="${not #lists.isEmpty(contamNgReactions)}">
-        <h3 class="category-title">コンタミネーション：<span class="contam-status-ng">NG</span></h3>
+        <h3 class="category-title">調理工程・器具の共有だけでも<span class="contam-status-ng">NG</span></h3>
         <div class="card-container" id="contam-ng-container">
             <!-- Allergy Card Loop -->
             <div th:each="reaction : ${contamNgReactions}" class="allergy-card">
@@ -348,23 +379,25 @@
                          class="card-title-illustration"
                          onerror="this.onerror=null; this.style.display='none';">
                     <span class="allergen-name" th:text="${reaction.allergenName}">アレルギー名</span>
-                    <a th:href="@{/data/show/food/{reactionid}(reactionid=${reaction.reactionid})}" class="detail-button">詳細</a>
+                    <!--/* <a th:href="@{/data/show/food/{reactionid}(reactionid=${reaction.reactionid})}" class="detail-button">詳細</a> */-->
                 </div>
-                <div class="card-body">
+                <div class="card-body" th:if="${(reaction.extraNotes != null and !#strings.isEmpty(reaction.extraNotes)) or reaction.anaRisk == 1}">
                     <div class="card-details">
-                        <p class="risk-row">
-                            <strong>重反応リスク:</strong>
-                            <span th:switch="${reaction.anaRisk}"
-                                  th:classappend="${reaction.anaRisk == 1 ? 'risk-text-high' : (reaction.anaRisk == 2 ? 'risk-text-low' : 'risk-text-medium')}">
-                                <span th:case="1">高い</span>
-                                <span th:case="9">微妙</span>
-                                <span th:case="0">不明</span>
-                                <span th:case="2">低い</span>
-                            </span>
-                        </p>
+                        <!-- 重反応リスク警告（高い場合のみ） -->
+                        <div th:if="${reaction.anaRisk == 1}" 
+                             style="color: #d9534f; font-weight: bold; font-size: 0.95rem; margin-bottom: 0.25rem; text-align: left;">
+                            重篤な反応を起こすリスク：高い
+                        </div>
+
+                        <!--/* 元の枠あり表示
                         <div class="notes-section" th:if="${reaction.extraNotes != null and !#strings.isEmpty(reaction.extraNotes)}">
-                            <div class="notes-title">特記事項</div>
                             <div class="notes-content" th:utext="${#strings.replace(reaction.extraNotes, '\n', '<br>')}"></div>
+                        </div>
+                        */-->
+                        <!-- 枠なし直接表示 -->
+                        <div th:if="${reaction.extraNotes != null and !#strings.isEmpty(reaction.extraNotes)}" 
+                             th:utext="${#strings.replace(reaction.extraNotes, '\n', '<br>')}"
+                             style="font-size: 1rem; white-space: pre-wrap; word-wrap: break-word;">
                         </div>
                     </div>
                 </div>
@@ -374,7 +407,7 @@
 
     <!-- カテゴリ: コンタミ不明/微妙 -->
     <div class="section-wrapper section-uncertain" th:if="${not #lists.isEmpty(contamUncertainReactions)}">
-        <h3 class="category-title">コンタミネーション：<span class="contam-status-uncertain">不明・微妙</span></h3>
+        <h3 class="category-title">調理工程・器具の共有がある場合は<span class="contam-status-uncertain">判断を仰ぐ必要あり</span></h3>
         <div class="card-container" id="contam-uncertain-container">
             <!-- Allergy Card Loop -->
             <div th:each="reaction : ${contamUncertainReactions}" class="allergy-card">
@@ -384,23 +417,25 @@
                          class="card-title-illustration"
                          onerror="this.onerror=null; this.style.display='none';">
                     <span class="allergen-name" th:text="${reaction.allergenName}">アレルギー名</span>
-                    <a th:href="@{/data/show/food/{reactionid}(reactionid=${reaction.reactionid})}" class="detail-button">詳細</a>
+                    <!--/* <a th:href="@{/data/show/food/{reactionid}(reactionid=${reaction.reactionid})}" class="detail-button">詳細</a> */-->
                 </div>
-                <div class="card-body">
+                <div class="card-body" th:if="${(reaction.extraNotes != null and !#strings.isEmpty(reaction.extraNotes)) or reaction.anaRisk == 1}">
                     <div class="card-details">
-                        <p class="risk-row">
-                            <strong>重反応リスク:</strong>
-                            <span th:switch="${reaction.anaRisk}"
-                                  th:classappend="${reaction.anaRisk == 1 ? 'risk-text-high' : (reaction.anaRisk == 2 ? 'risk-text-low' : 'risk-text-medium')}">
-                                <span th:case="1">高い</span>
-                                <span th:case="9">微妙</span>
-                                <span th:case="0">不明</span>
-                                <span th:case="2">低い</span>
-                            </span>
-                        </p>
+                        <!-- 重反応リスク警告（高い場合のみ） -->
+                        <div th:if="${reaction.anaRisk == 1}" 
+                             style="color: #d9534f; font-weight: bold; font-size: 0.95rem; margin-bottom: 0.25rem; text-align: left;">
+                            重篤な反応を起こすリスク：高い
+                        </div>
+
+                        <!--/* 元の枠あり表示
                         <div class="notes-section" th:if="${reaction.extraNotes != null and !#strings.isEmpty(reaction.extraNotes)}">
-                            <div class="notes-title">特記事項</div>
                             <div class="notes-content" th:utext="${#strings.replace(reaction.extraNotes, '\n', '<br>')}"></div>
+                        </div>
+                        */-->
+                        <!-- 枠なし直接表示 -->
+                        <div th:if="${reaction.extraNotes != null and !#strings.isEmpty(reaction.extraNotes)}" 
+                             th:utext="${#strings.replace(reaction.extraNotes, '\n', '<br>')}"
+                             style="font-size: 1rem; white-space: pre-wrap; word-wrap: break-word;">
                         </div>
                     </div>
                 </div>
@@ -410,7 +445,7 @@
 
     <!-- カテゴリ: コンタミOK -->
     <div class="section-wrapper section-ok" th:if="${not #lists.isEmpty(contamOkReactions)}">
-        <h3 class="category-title">コンタミネーション：<span class="contam-status-ok">OK</span></h3>
+        <h3 class="category-title">調理工程・器具の共有だけならOK</h3>
         <div class="card-container" id="contam-ok-container">
             <!-- Allergy Card Loop -->
             <div th:each="reaction : ${contamOkReactions}" class="allergy-card">
@@ -420,23 +455,25 @@
                          class="card-title-illustration"
                          onerror="this.onerror=null; this.style.display='none';">
                     <span class="allergen-name" th:text="${reaction.allergenName}">アレルギー名</span>
-                    <a th:href="@{/data/show/food/{reactionid}(reactionid=${reaction.reactionid})}" class="detail-button">詳細</a>
+                    <!--/* <a th:href="@{/data/show/food/{reactionid}(reactionid=${reaction.reactionid})}" class="detail-button">詳細</a> */-->
                 </div>
-                <div class="card-body">
+                <div class="card-body" th:if="${(reaction.extraNotes != null and !#strings.isEmpty(reaction.extraNotes)) or reaction.anaRisk == 1}">
                     <div class="card-details">
-                        <p class="risk-row">
-                            <strong>重反応リスク:</strong>
-                            <span th:switch="${reaction.anaRisk}"
-                                  th:classappend="${reaction.anaRisk == 1 ? 'risk-text-high' : (reaction.anaRisk == 2 ? 'risk-text-low' : 'risk-text-medium')}">
-                                <span th:case="1">高い</span>
-                                <span th:case="9">微妙</span>
-                                <span th:case="0">不明</span>
-                                <span th:case="2">低い</span>
-                            </span>
-                        </p>
+                        <!-- 重反応リスク警告（高い場合のみ） -->
+                        <div th:if="${reaction.anaRisk == 1}" 
+                             style="color: #d9534f; font-weight: bold; font-size: 0.95rem; margin-bottom: 0.25rem; text-align: left;">
+                            重篤な反応を起こすリスク：高い
+                        </div>
+
+                        <!--/* 元の枠あり表示
                         <div class="notes-section" th:if="${reaction.extraNotes != null and !#strings.isEmpty(reaction.extraNotes)}">
-                            <div class="notes-title">特記事項</div>
                             <div class="notes-content" th:utext="${#strings.replace(reaction.extraNotes, '\n', '<br>')}"></div>
+                        </div>
+                        */-->
+                        <!-- 枠なし直接表示 -->
+                        <div th:if="${reaction.extraNotes != null and !#strings.isEmpty(reaction.extraNotes)}" 
+                             th:utext="${#strings.replace(reaction.extraNotes, '\n', '<br>')}"
+                             style="font-size: 1rem; white-space: pre-wrap; word-wrap: break-word;">
                         </div>
                     </div>
                 </div>
@@ -448,7 +485,9 @@
 
 
 <div class="scroll-indicator-wrapper">
-    <div class="scroll-indicator-gradient"></div>
+    <div class="scroll-indicator-gradient">
+        <div class="scroll-arrow"></div>
+    </div>
 </div>
 
 </body>
