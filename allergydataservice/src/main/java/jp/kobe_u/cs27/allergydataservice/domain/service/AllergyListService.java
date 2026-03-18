@@ -75,16 +75,16 @@ public class AllergyListService {
       }
 
       if (foodReaction.getAllergenExamples() != null && !foodReaction.getAllergenExamples().isEmpty()) {
-        notes.append("具体的なアレルゲン:").append(foodReaction.getAllergenExamples()).append("\n");
+        notes.append("具体的なアレルゲン：").append(foodReaction.getAllergenExamples()).append("\n");
       }
       if (!"なし".equals(foodReaction.getQuantity())) {
-          notes.append("反応を起こす分量:").append(foodReaction.getQuantity()).append("\n");
+          notes.append("反応を起こす分量：").append(foodReaction.getQuantity()).append("\n");
       }
       if (!"なし".equals(foodReaction.getProducingArea())) {
           notes.append("反応を起こす産地：").append(foodReaction.getProducingArea()).append("\n");
       }
       if (!"なし".equals(foodReaction.getComment())) {
-          notes.append("その他：").append(foodReaction.getComment()).append("\n");
+          notes.append("追記：").append(foodReaction.getComment()).append("\n");
       }
 
 
