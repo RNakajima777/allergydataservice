@@ -119,8 +119,8 @@
       <label>コンタミの可否:</label>
       <span th:if="${allergy.contamination == 1}">OK</span>
       <span th:if="${allergy.contamination == 2}">NG</span>
-      <span th:if="${allergy.contamination == 0}">不明</span>
-      <span th:if="${allergy.contamination == 9}">どちらともいえない</span>
+      <span th:if="${allergy.contamination == 0}">要確認</span>
+      <span th:if="${allergy.contamination == 9}">要確認</span>
     </div>
 
     <div class="form-group">

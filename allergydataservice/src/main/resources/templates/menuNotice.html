@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ご利用にあたっての注意</title>
+    <style>
+        body {
+            background-color: #f4f6f8;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            box-sizing: border-box;
+        }
+        h1 {
+            font-size: 1.6rem;
+            color: #007bff;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        h2 {
+            font-size: 1.1rem;
+            color: #333333;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .notice-box {
+            background-color: #fff8e1;
+            border: 1px solid #ffe58f;
+            border-radius: 0.5rem;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        .notice-box p {
+            margin: 0 0 0.75rem;
+        }
+        .notice-box p:last-child {
+            margin-bottom: 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>メニューのアレルギー情報を見る前に</h1>
+        <h2 th:text="${shopName}"></h2>
+
+        <div class="notice-box">
+            <p>このメニューに表示されるアレルギー情報は、お店が登録した内容に基づいています。調理工程や原材料の変更等により、コンタミ(他の原材料との接触・混入)を完全に取り除くことができない場合があります。</p>
+            <p>表示内容に不安がある場合や、心配な点がある場合は、ご注文の前に必ずお店のスタッフに直接ご確認ください。</p>
+        </div>
+
+        <a class="btn btn-primary" th:href="@{/shop/{shopId}/customer/main(shopId=${shopId})}">メニューを見る</a>
+    </div>
+</body>
+</html>

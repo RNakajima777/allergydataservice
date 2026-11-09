@@ -41,6 +41,16 @@ public class AllergicReactionService {
   private final UserService userService;
   private final AllergicSymptomService allergicSymptomService;
 
+  /**
+   * 指定したユーザのアレルギー反応登録一覧を取得する
+   *
+   * @param uid ユーザID
+   * @return アレルギー反応の一覧
+   */
+  public List<AllergicReaction> getReactionsByUid(String uid) {
+    return allergy.findByUid(uid);
+  }
+
   public AllergicReaction createFoodAllergy(AllergicReactionForm form) {
 
     // ユーザIDを変数に格納する

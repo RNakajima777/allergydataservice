@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>メニューアレルギー情報</title>
+    <style>
+        body {
+            background-color: #f4f6f8;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: #007bff;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            color: #333333;
+            margin-bottom: 1rem;
+        }
+
+        /* カテゴリタブ(カテゴリが増えても1行のまま横スクロールできるようにする) */
+        .category-tabs {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            gap: 0.5rem;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .category-tabs::-webkit-scrollbar {
+            height: 6px;
+        }
+        .category-tabs::-webkit-scrollbar-thumb {
+            background-color: #ced4da;
+            border-radius: 3px;
+        }
+
+        .tab-button {
+            flex-shrink: 0;
+            white-space: nowrap;
+            padding: 0.6rem 1.2rem;
+            border: 1px solid #ced4da;
+            background-color: #ffffff;
+            border-radius: 0.5rem 0.5rem 0 0;
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: #495057;
+        }
+
+        .tab-button.active {
+            background-color: #007bff;
+            color: #ffffff;
+            border-color: #007bff;
+        }
+
+        /* カード(選択中のカテゴリのみ表示) */
+        .category-card-wrapper {
+            max-width: 700px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .category-panel {
+            display: none;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .category-panel.active {
+            display: block;
+        }
+
+        .category-card-header {
+            margin-bottom: 1rem;
+        }
+
+        .category-card-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .empty-message {
+            color: #6c757d;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        /* 登録済みメニューのカード一覧 */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .menu-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.15s;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .menu-judgement-badge {
+            position: absolute;
+            top: 0.4rem;
+            right: 0.4rem;
+            width: 1.8rem;
+            height: 1.8rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            background-color: #ffffff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+        .menu-judgement-badge.mark-ok { color: #28a745; }
+        .menu-judgement-badge.mark-caution { color: #e0a800; }
+        .menu-judgement-badge.mark-ng { color: #dc3545; }
+
+        .filter-cta {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .btn-green {
+            display: inline-block;
+            background-color: #28a745;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+        }
+        .btn-green:hover {
+            background-color: #218838;
+        }
+        .filter-active-note {
+            text-align: center;
+            color: #495057;
+            font-size: 0.85rem;
+            margin-top: -0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .filter-condition-box {
+            max-width: 700px;
+            margin: 0 auto 1.5rem auto;
+            border: 1px solid #c9d8f5;
+            border-radius: 0.5rem;
+            background-color: #f5f8ff;
+            overflow: hidden;
+        }
+        .filter-condition-box summary {
+            cursor: pointer;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #0056b3;
+            list-style: none;
+            user-select: none;
+        }
+        .filter-condition-box summary::-webkit-details-marker {
+            display: none;
+        }
+        .filter-condition-box summary::before {
+            content: '▸ ';
+            font-size: 0.7rem;
+        }
+        .filter-condition-box[open] summary::before {
+            content: '▾ ';
+        }
+        .filter-condition-summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            padding: 0 0.8rem 0.6rem 0.8rem;
+        }
+        .filter-condition-summary .condition-chip {
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            background-color: #ffffff;
+            border: 1px solid #c9d8f5;
+            color: #333333;
+            font-size: 0.75rem;
+        }
+
+        .menu-card-image {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+            background-color: #f1f3f5;
+            display: block;
+        }
+
+        .menu-card-body {
+            padding: 0.6rem;
+        }
+
+        .menu-card-name {
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 0.2rem;
+            overflow-wrap: break-word;
+        }
+
+        .menu-card-price {
+            font-size: 0.85rem;
+            color: #495057;
+        }
+
+        @media (max-width: 576px) {
+            body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>[[${shopName}]]のメニューアレルギー情報</h1>
+
+    <div class="filter-cta">
+        <a class="btn-green" th:href="@{/shop/{shopId}/customer/filter(shopId=${shopId},uid=${uid})}">アレルギー対応で絞り込む</a>
+    </div>
+    <p class="filter-active-note" th:if="${filterActive}">あなたの登録情報に基づいた判定(○=食べられる/△=要確認/×=食べられない)をバッジで表示しています。</p>
+    <details class="filter-condition-box" th:if="${filterActive and filterConditionSummaries != null and !#lists.isEmpty(filterConditionSummaries)}" open>
+        <summary>絞り込み条件</summary>
+        <div class="filter-condition-summary">
+            <span class="condition-chip" th:each="summary : ${filterConditionSummaries}" th:text="${summary}"></span>
+        </div>
+    </details>
+
+    <!-- カテゴリ一覧 -->
+    <p class="empty-message" th:if="${#lists.isEmpty(categories)}">まだメニューが登録されていません。</p>
+
+    <!-- カテゴリタブ -->
+    <div class="category-tabs" th:if="${!#lists.isEmpty(categories)}">
+        <button type="button" class="tab-button" th:each="category, categoryStat : ${categories}"
+                th:classappend="${categoryStat.first} ? ' active'"
+                th:attr="data-category-id=${category.categoryId}"
+                th:text="${category.categoryName}"
+                onclick="showCategory(this.dataset.categoryId)"></button>
+    </div>
+
+    <!-- 選択中のカテゴリのカード -->
+    <div class="category-card-wrapper">
+        <div class="category-panel" th:each="category, categoryStat : ${categories}"
+             th:classappend="${categoryStat.first} ? ' active'"
+             th:attr="data-category-id=${category.categoryId}">
+            <div class="category-card-header">
+                <h2 th:text="${category.categoryName}"></h2>
+            </div>
+            <p class="empty-message" th:if="${#lists.isEmpty(menusByCategory.get(category.categoryId))}">このカテゴリにはまだメニューが登録されていません。</p>
+            <div class="menu-grid" th:if="${!#lists.isEmpty(menusByCategory.get(category.categoryId))}">
+                <a class="menu-card" th:each="menu : ${menusByCategory.get(category.categoryId)}"
+                   th:href="@{/shop/{shopId}/customer/menu/{menuId}(shopId=${shopId},menuId=${menu.menuId},uid=${uid},filterActive=${filterActive},filterAllergenId=${filterAllergenId},filterTolerance=${filterTolerance})}">
+                    <div class="menu-judgement-badge"
+                         th:if="${filterActive and menuJudgementMarks != null}"
+                         th:text="${menuJudgementMarks.get(menu.menuId)}"
+                         th:classappend="${menuJudgementMarks.get(menu.menuId) == '○'} ? 'mark-ok' : (${menuJudgementMarks.get(menu.menuId) == '△'} ? 'mark-caution' : 'mark-ng')"></div>
+                    <img class="menu-card-image"
+                         th:src="@{${menu.imagePath != null} ? ${menu.imagePath} : '/images/allergens/画像なし.png'}"
+                         alt="">
+                    <div class="menu-card-body">
+                        <div class="menu-card-name" th:text="${menu.menuName}"></div>
+                        <div class="menu-card-price" th:text="${menu.price} + '円'"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showCategory(categoryId) {
+        document.querySelectorAll('.tab-button').forEach(function (btn) {
+            btn.classList.toggle('active', btn.dataset.categoryId === String(categoryId));
+        });
+        document.querySelectorAll('.category-panel').forEach(function (panel) {
+            panel.classList.toggle('active', panel.dataset.categoryId === String(categoryId));
+        });
+    }
+</script>
+</body>
+</html>

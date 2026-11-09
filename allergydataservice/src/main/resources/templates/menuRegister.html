@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>メニュー登録</title>
+  <link rel="stylesheet"
+        th:href="@{/webjars/bootstrap/5.0.0-beta3/css/bootstrap.min.css}"/>
+  <script th:src="@{/webjars/bootstrap/5.0.0-beta3/js/bootstrap.min.js}"
+          type="text/javascript"></script>
+
+  <style>
+    body {
+      background-color: #f4f6f8;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background-color: #ffffff;
+      border-radius: 1rem;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      max-width: 800px;
+      width: 90%;
+      box-sizing: border-box;
+    }
+
+    header h1 {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+
+    h2.text-danger {
+      text-align: center;
+    }
+
+    form {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="file"],
+    textarea {
+      width: 100%;
+      max-width: 600px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    button[type="button"],
+    button[type="submit"],
+    input[type="submit"] {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 10px;
+    }
+
+    button[type="submit"] {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      font-size: 1rem;
+      width: 100%;
+      margin-right: 0;
+    }
+    button[type="submit"]:hover,
+    button[type="button"]:hover {
+      background-color: #0056b3;
+    }
+
+    input.btn-warning,
+    button.btn-warning {
+      background-color: #d9d6d6;
+      border: 2px solid black;
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      font-size: 1rem;
+      width: 100%;
+      color: black;
+    }
+    input.btn-warning:hover,
+    button.btn-warning:hover {
+      background-color: #5a6268;
+      color: white;
+    }
+
+    form > div {
+      margin-bottom: 20px;
+    }
+    form > div:last-child {
+      margin-bottom: 0;
+    }
+
+    /* 原産地情報フォーム(反応の症状と同じ考え方) */
+    #originForms {
+      margin-top: 10px;
+    }
+    .origin-form {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #fefefe;
+      margin-bottom: 15px;
+    }
+    .origin-form label {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .origin-form button {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .origin-form button:hover {
+      background-color: #b02a37;
+    }
+    .delete-button-wrapper {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    /* アレルゲンマトリクス(表形式) */
+    .allergen-mode-toggle {
+      font-weight: normal;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.9rem;
+    }
+    .allergen-mode-toggle input[type="checkbox"] {
+      width: auto;
+    }
+    .allergen-table-scroll {
+      overflow-x: auto;
+    }
+    .allergen-table {
+      width: 100%;
+      min-width: 620px;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+    .allergen-table th,
+    .allergen-table td {
+      border-bottom: 1px solid #eee;
+      padding: 0.4rem 0.3rem;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .allergen-table td.allergen-name {
+      text-align: left;
+      white-space: normal;
+      min-width: 0;
+    }
+    .allergen-table thead th {
+      font-weight: bold;
+      color: #495057;
+      border-bottom: 2px solid #ccc;
+    }
+    .allergen-table tr.allergen-group-row td {
+      background-color: #e9ecef;
+      font-weight: bold;
+      text-align: left;
+    }
+    .allergen-table tr.mandatory-row {
+      background-color: #fff8e1;
+    }
+    .allergen-table tr.recommended-row.hidden-row {
+      display: none;
+    }
+    .allergen-table tr.contains-error-row {
+      background-color: #ffe0e0;
+    }
+    .allergen-table input[type="radio"] {
+      width: auto;
+      margin: 0;
+    }
+    .allergen-table input[type="radio"]:disabled {
+      opacity: 0.3;
+    }
+    .allergen-table th.contamination-col,
+    .allergen-table td.contamination-cell {
+      border-left: 2px solid #ccc;
+    }
+    .allergen-table td.contamination-cell.disabled {
+      background-color: #f4f6f8;
+    }
+
+    @media (max-width: 576px) {
+      .container {
+        padding: 1.5rem 1rem;
+      }
+    }
+  </style>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const container = document.getElementById("originForms");
+      if (container.children.length === 0) {
+        addOriginForm();
+      }
+      initAllergenRows();
+
+      const mandatoryOnlyToggle = document.getElementById("mandatoryOnlyToggle");
+      if (mandatoryOnlyToggle && mandatoryOnlyToggle.checked) {
+        toggleRecommendedRows(true);
+      }
+    });
+
+    function toggleRecommendedRows(hide) {
+      document.querySelectorAll('.recommended-row').forEach(function (row) {
+        row.classList.toggle('hidden-row', hide);
+      });
+    }
+
+    // 「含有」(未評価/有/無)と「コンタミ」(有/不明/無)の2段階選択から、
+    // 実際に送信するpresenceType(0〜4)の値を1行ごとに同期する
+    function syncRowPresenceType(row) {
+      const checkedContains = row.querySelector('.contains-radio:checked');
+      const containsValue = checkedContains ? checkedContains.value : '0';
+      const hiddenInput = row.querySelector('.presence-type-input');
+      const contaminationRadios = row.querySelectorAll('.contamination-radio');
+      const contaminationCells = row.querySelectorAll('.contamination-cell');
+
+      const isContainsNo = containsValue === '2';
+      contaminationRadios.forEach(function (radio) {
+        radio.disabled = !isContainsNo;
+      });
+      contaminationCells.forEach(function (cell) {
+        cell.classList.toggle('disabled', !isContainsNo);
+      });
+
+      if (isContainsNo) {
+        const checkedContamination = row.querySelector('.contamination-radio:checked');
+        hiddenInput.value = checkedContamination ? checkedContamination.value : '3';
+      } else {
+        hiddenInput.value = containsValue;
+      }
+    }
+
+    function initAllergenRows() {
+      document.querySelectorAll('.allergen-table tbody tr[data-row-index]').forEach(syncRowPresenceType);
+    }
+
+    document.addEventListener('change', function (e) {
+      const target = e.target;
+      if (!target.classList || (!target.classList.contains('contains-radio') && !target.classList.contains('contamination-radio'))) {
+        return;
+      }
+      syncRowPresenceType(target.closest('tr'));
+    });
+
+    function addOriginForm() {
+      const container = document.getElementById("originForms");
+      const index = container.children.length;
+
+      const html = `
+        <div id="origin-${index}" class="origin-form">
+          <label>食材:</label>
+          <input type="text" name="originForms[${index}].ingredientName" required>
+          <label>原産地:</label>
+          <input type="text" name="originForms[${index}].producingArea" required>
+          <div class="delete-button-wrapper">
+            <button type="button" onclick="removeOriginForm(${index})">この項目を削除</button>
+          </div>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', html);
+    }
+
+    function removeOriginForm(index) {
+      const form = document.getElementById(`origin-${index}`);
+      if (form) {
+        form.remove();
+        reindexOriginForms();
+      }
+    }
+
+    function reindexOriginForms() {
+      const container = document.getElementById("originForms");
+      const forms = container.getElementsByClassName("origin-form");
+
+      Array.from(forms).forEach((form, newIndex) => {
+        form.id = `origin-${newIndex}`;
+        const inputs = form.querySelectorAll("input[type='text']");
+        inputs[0].name = `originForms[${newIndex}].ingredientName`;
+        inputs[1].name = `originForms[${newIndex}].producingArea`;
+        const deleteButton = form.querySelector("button");
+        deleteButton.setAttribute("onclick", `removeOriginForm(${newIndex})`);
+      });
+    }
+  </script>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>[[${categoryName}]]にメニューを追加</h1>
+  </header>
+
+  <h2 th:if="${isMenuFormError}" class="text-danger">入力内容に誤りがあります</h2>
+  <h2 th:if="${isMenuAllergenError}" class="text-danger">
+    以下の品目で「含有」の有無(有/無)が未入力です: <span th:text="${#strings.listJoin(unansweredAllergenNames, '、')}"></span>
+  </h2>
+
+  <form th:action="@{/shop/{shopId}/menu/add/confirm(shopId=${shopId})}"
+        th:object="${menuForm}"
+        method="post"
+        enctype="multipart/form-data">
+
+    <input type="hidden" th:field="*{categoryId}">
+
+    <div>
+      <label for="menuName">メニュー名:</label>
+      <input type="text" id="menuName" th:field="*{menuName}" maxlength="30" required>
+    </div>
+
+    <div>
+      <label for="image">メニュー画像(任意):</label>
+      <input type="file" id="image" name="image" accept="image/*">
+    </div>
+
+    <div>
+      <label for="price">値段(円):</label>
+      <input type="number" id="price" th:field="*{price}" min="0" required>
+    </div>
+
+    <div>
+      <label>アレルギー情報(主要29品目):</label>
+      <!-- 「特定原材料9品目のみ入力する」トグル: 一時的にUIから非表示(復元する場合はこのコメントを外す)
+      <label class="allergen-mode-toggle">
+        <input type="checkbox" id="mandatoryOnlyToggle" name="mandatoryOnly" th:checked="${mandatoryOnly}" onchange="toggleRecommendedRows(this.checked)">
+        特定原材料9品目のみ入力する(それに準ずるものは表示しない)
+      </label>
+      -->
+      <p class="allergen-help-text" style="font-weight: normal; font-size: 0.85rem; color: #495057; margin: 0 0 0.5rem;">
+        まず「含有」で有無を選択してください(必須)。「無」を選んだ品目のみ、右側の「コンタミ」を有/不明/無から選べます(未選択の場合は「不明」として登録されます)。
+      </p>
+      <div class="allergen-table-scroll">
+        <table class="allergen-table">
+          <thead>
+            <tr>
+              <th rowspan="2">アレルゲン</th>
+              <th colspan="3">含有</th>
+              <th colspan="3" class="contamination-col">コンタミ(含有「無」の場合)</th>
+            </tr>
+            <tr>
+              <th>未評価</th>
+              <th>有</th>
+              <th>無</th>
+              <th class="contamination-col">有<br>△</th>
+              <th>不明<br>？</th>
+              <th>無<br>ー</th>
+            </tr>
+          </thead>
+          <tbody>
+            <th:block th:each="af, stat : *{allergenForms}">
+              <tr class="allergen-group-row" th:if="${stat.index == 0}">
+                <td colspan="7">特定原材料9品目</td>
+              </tr>
+              <tr class="allergen-group-row recommended-row" th:if="${stat.index == mandatoryAllergenCount}">
+                <td colspan="7">特定原材料に準ずるもの20品目</td>
+              </tr>
+              <tr th:classappend="${(stat.index < mandatoryAllergenCount) ? 'mandatory-row' : 'recommended-row'} + ${(unansweredAllergenNames != null and unansweredAllergenNames.contains(af.allergenName)) ? ' contains-error-row' : ''}"
+                  th:attr="data-row-index=${stat.index}">
+                <td class="allergen-name">
+                  <span th:text="${af.allergenName}"></span>
+                  <input type="hidden" th:field="*{allergenForms[__${stat.index}__].allergenid}">
+                  <input type="hidden" th:field="*{allergenForms[__${stat.index}__].allergenName}">
+                  <input type="hidden" class="presence-type-input" th:field="*{allergenForms[__${stat.index}__].presenceType}">
+                </td>
+                <td><input type="radio" class="contains-radio" th:name="'contains-' + ${stat.index}" value="0" th:checked="${af.presenceType == 0}"></td>
+                <td><input type="radio" class="contains-radio" th:name="'contains-' + ${stat.index}" value="1" th:checked="${af.presenceType == 1}"></td>
+                <td><input type="radio" class="contains-radio" th:name="'contains-' + ${stat.index}" value="2" th:checked="${af.presenceType >= 2}"></td>
+                <td class="contamination-cell"><input type="radio" class="contamination-radio" th:name="'contamination-' + ${stat.index}" value="2" th:checked="${af.presenceType == 2}"></td>
+                <td class="contamination-cell"><input type="radio" class="contamination-radio" th:name="'contamination-' + ${stat.index}" value="3" th:checked="${af.presenceType == 3 or af.presenceType == 0 or af.presenceType == 1}"></td>
+                <td class="contamination-cell"><input type="radio" class="contamination-radio" th:name="'contamination-' + ${stat.index}" value="4" th:checked="${af.presenceType == 4}"></td>
+              </tr>
+            </th:block>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <label>原産地情報(任意):</label>
+      <div id="originForms">
+        <div th:each="originForm, stat : *{originForms}" th:id="'origin-' + ${stat.index}" class="origin-form">
+          <label>食材:</label>
+          <input type="text" th:field="*{originForms[__${stat.index}__].ingredientName}" required>
+          <label>原産地:</label>
+          <input type="text" th:field="*{originForms[__${stat.index}__].producingArea}" required>
+          <div class="delete-button-wrapper">
+            <button type="button" th:onclick="'removeOriginForm(' + ${stat.index} + ')'">この項目を削除</button>
+          </div>
+        </div>
+      </div>
+      <button type="button" onclick="addOriginForm()">原産地情報を追加</button>
+    </div>
+
+    <div>
+      <label for="comment">特記事項(任意):</label>
+      <textarea id="comment" th:field="*{comment}" maxlength="300" placeholder="例: 仕入れ状況により原材料が変わる場合があります"></textarea>
+    </div>
+
+    <div>
+      <button type="submit">確認画面へ</button>
+    </div>
+  </form>
+
+  <form method="get" th:action="@{/shop/{shopId}/main(shopId=${shopId})}">
+    <input class="btn btn-warning" type="submit" value="カテゴリ一覧にもどる">
+  </form>
+</div>
+</body>
+</html>
