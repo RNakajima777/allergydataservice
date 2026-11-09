@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>店舗QRコード表示</title>
+    <style>
+        body {
+            background-color: #f4f6f8;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        h1 {
+            font-size: 1.8rem;
+            color: #007bff;
+            margin-bottom: 1.5rem;
+        }
+        .qr-code-container {
+            margin-bottom: 2rem;
+        }
+        p.qr-help-text {
+            color: #495057;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+        }
+        .btn-warning {
+            background-color: #d9d6d6;
+            border: 1px solid black;
+            color: black;
+        }
+        .btn-warning:hover {
+            background-color: #5a6268;
+            color: white;
+        }
+        .button-group {
+            margin-top: 2rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>[[${shopName}]]のメニューQRコード</h1>
+
+        <div class="qr-code-container">
+            <img th:src="@{${'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + qrDataUrl}}" alt="QR Code">
+        </div>
+
+        <p class="qr-help-text">このQRコードをお店に掲示してください。お客様がスマホのカメラで読み取ると、メニューのアレルギー情報を閲覧できます。</p>
+
+        <div class="button-group">
+            <a th:href="@{/shop/{shopId}/main(shopId=${shopId})}" class="btn btn-warning">メニュー管理にもどる</a>
+        </div>
+    </div>
+</body>
+</html>

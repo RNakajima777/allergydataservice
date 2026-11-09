@@ -318,22 +318,18 @@
           </div>
 
           <div class="ana-options">
-              <label>コンタミ(製造過程におけるアレルゲンの微量混入)の可否:</label>
+              <label>飲食時のコンタミ(製造工場におけるライン共有、厨房における調理器具共有)への対応:</label>
               <div class="option-item">
                 <input type="radio" id="ok" name="contamination" th:field="*{contamination}" value="1" />
-                <label for="ok">OK</label>
+                <label for="ok">OK(原材料自体に含まれていなければ食べられる)</label>
               </div>
               <div class="option-item">
                 <input type="radio" id="ng" name="contamination" th:field="*{contamination}" value="2" />
-                <label for="ng">NG</label>
+                <label for="ng">NG(微量の混入でも食べてはいけない)</label>
               </div>
               <div class="option-item">
                 <input type="radio" id="unknown" name="contamination" th:field="*{contamination}" value="0" />
-                <label for="unknown">不明</label>
-              </div>
-              <div class="option-item">
-                <input type="radio" id="yesandno" name="contamination" th:field="*{contamination}" value="9" />
-                <label for="yesandno">どちらともいえない</label>
+                <label for="unknown">要確認(場合によるので、お店では情報確認が必要)</label>
               </div>
           </div>
           

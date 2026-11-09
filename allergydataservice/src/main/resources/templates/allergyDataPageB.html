@@ -396,7 +396,7 @@
                         */-->
                         <!-- 枠なし直接表示 -->
                         <div th:if="${reaction.extraNotes != null and !#strings.isEmpty(reaction.extraNotes)}" 
-                             th:utext="${#strings.replace(reaction.extraNotes, '\n', '<br>')}"
+                             th:utext="${#strings.replace(#strings.replace(#strings.replace(#strings.replace(#strings.replace(reaction.extraNotes, '\n', '<br>'), '具体的なアレルゲン', '<b>具体的なアレルゲン</b>'), '反応を起こす分量', '<b>反応を起こす分量</b>'), '反応を起こす産地', '<b>反応を起こす産地</b>'), '追記', '<b>追記</b>')}"
                              style="font-size: 1rem; white-space: pre-wrap; word-wrap: break-word;">
                         </div>
                     </div>
@@ -434,7 +434,7 @@
                         */-->
                         <!-- 枠なし直接表示 -->
                         <div th:if="${reaction.extraNotes != null and !#strings.isEmpty(reaction.extraNotes)}" 
-                             th:utext="${#strings.replace(reaction.extraNotes, '\n', '<br>')}"
+                             th:utext="${#strings.replace(#strings.replace(#strings.replace(#strings.replace(#strings.replace(reaction.extraNotes, '\n', '<br>'), '具体的なアレルゲン', '<b>具体的なアレルゲン</b>'), '反応を起こす分量', '<b>反応を起こす分量</b>'), '反応を起こす産地', '<b>反応を起こす産地</b>'), '追記', '<b>追記</b>')}"
                              style="font-size: 1rem; white-space: pre-wrap; word-wrap: break-word;">
                         </div>
                     </div>
@@ -472,7 +472,7 @@
                         */-->
                         <!-- 枠なし直接表示 -->
                         <div th:if="${reaction.extraNotes != null and !#strings.isEmpty(reaction.extraNotes)}" 
-                             th:utext="${#strings.replace(reaction.extraNotes, '\n', '<br>')}"
+                             th:utext="${#strings.replace(#strings.replace(#strings.replace(#strings.replace(#strings.replace(reaction.extraNotes, '\n', '<br>'), '具体的なアレルゲン', '<b>具体的なアレルゲン</b>'), '反応を起こす分量', '<b>反応を起こす分量</b>'), '反応を起こす産地', '<b>反応を起こす産地</b>'), '追記', '<b>追記</b>')}"
                              style="font-size: 1rem; white-space: pre-wrap; word-wrap: break-word;">
                         </div>
                     </div>

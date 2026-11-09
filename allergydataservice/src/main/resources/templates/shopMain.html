@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>店舗メニューアレルギー情報</title>
+    <style>
+        body {
+            background-color: #f4f6f8;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: #007bff;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            color: #333333;
+            margin-bottom: 1rem;
+        }
+
+        .text-danger {
+            font-size: 1rem;
+            color: #dc3545;
+            text-align: center;
+        }
+
+        /* カテゴリ追加フォーム */
+        .add-category-form {
+            display: flex;
+            gap: 0.5rem;
+            max-width: 500px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .add-category-form input[type="text"] {
+            flex: 1;
+            min-width: 0;
+            padding: 0.6rem;
+            border: 1px solid #ced4da;
+            border-radius: 0.5rem;
+            box-sizing: border-box;
+        }
+
+        /* カテゴリタブ(カテゴリが増えても1行のまま横スクロールできるようにする) */
+        .category-tabs {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            gap: 0.5rem;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .category-tabs::-webkit-scrollbar {
+            height: 6px;
+        }
+        .category-tabs::-webkit-scrollbar-thumb {
+            background-color: #ced4da;
+            border-radius: 3px;
+        }
+
+        .tab-button {
+            flex-shrink: 0;
+            white-space: nowrap;
+            padding: 0.6rem 1.2rem;
+            border: 1px solid #ced4da;
+            background-color: #ffffff;
+            border-radius: 0.5rem 0.5rem 0 0;
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: #495057;
+        }
+
+        .tab-button.active {
+            background-color: #007bff;
+            color: #ffffff;
+            border-color: #007bff;
+        }
+
+        /* カード(選択中のカテゴリのみ表示) */
+        .category-card-wrapper {
+            max-width: 700px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .category-panel {
+            display: none;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .category-panel.active {
+            display: block;
+        }
+
+        .category-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-card-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .category-card-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .category-delete-form {
+            margin: 0;
+        }
+
+        .empty-message {
+            color: #6c757d;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        /* 登録済みメニューのカード一覧 */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .menu-card {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.15s;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .menu-card-image {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+            background-color: #f1f3f5;
+            display: block;
+        }
+
+        .menu-card-body {
+            padding: 0.6rem;
+        }
+
+        .menu-card-name {
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 0.2rem;
+            overflow-wrap: break-word;
+        }
+
+        .menu-card-price {
+            font-size: 0.85rem;
+            color: #495057;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+        }
+
+        .btn-primary { background-color: #007bff; color: #ffffff; }
+        .btn-primary:hover { background-color: #0056b3; }
+        .btn-danger { background-color: #dc3545; color: #ffffff; }
+        .btn-danger:hover { background-color: #b02a37; }
+        .btn-warning { background-color: #d9d6d6; border: 1px solid black; color: black; }
+        .btn-warning:hover { background-color: #5a6268; color: white; }
+        .btn-green {
+            background-color: #28a745;
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 0.75rem 1.5rem;
+        }
+        .btn-green:hover { background-color: #218838; }
+
+        header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .button-group-footer {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 576px) {
+            body {
+                padding: 1rem;
+            }
+            .add-category-form {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <a class="btn btn-green" th:href="@{/shop/{shopId}/qr(shopId=${shopId})}">QRコードを表示</a>
+        <h1>[[${shopName}]]のメニューアレルギー情報</h1>
+    </header>
+
+    <!-- エラーメッセージ -->
+    <h2 th:if="${isMenuCategoryFormError}" class="text-danger">カテゴリ名の入力内容に誤りがあります</h2>
+    <h2 th:if="${isCategoryDeletePasswordError}" class="text-danger">パスワードが一致しないため、カテゴリを削除できませんでした</h2>
+
+    <!-- カテゴリ追加フォーム -->
+    <form class="add-category-form" method="post" th:action="@{/shop/{shopId}/category/register(shopId=${shopId})}" th:object="${menuCategoryForm}">
+        <input type="text" th:field="*{categoryName}" placeholder="新しいカテゴリ名 (例: ランチ、デザート)" maxlength="20" required>
+        <input class="btn btn-primary" type="submit" value="カテゴリを追加">
+    </form>
+
+    <!-- カテゴリ一覧 -->
+    <p class="empty-message" th:if="${#lists.isEmpty(categories)}">まだカテゴリがありません。上のフォームからカテゴリを作成してください。</p>
+
+    <!-- カテゴリタブ -->
+    <div class="category-tabs" th:if="${!#lists.isEmpty(categories)}">
+        <button type="button" class="tab-button" th:each="category, categoryStat : ${categories}"
+                th:classappend="${categoryStat.first} ? ' active'"
+                th:attr="data-category-id=${category.categoryId}"
+                th:text="${category.categoryName}"
+                onclick="showCategory(this.dataset.categoryId)"></button>
+    </div>
+
+    <!-- 選択中のカテゴリのカード -->
+    <div class="category-card-wrapper">
+        <div class="category-panel" th:each="category, categoryStat : ${categories}"
+             th:classappend="${categoryStat.first} ? ' active'"
+             th:attr="data-category-id=${category.categoryId}">
+            <div class="category-card-header">
+                <h2 th:text="${category.categoryName}"></h2>
+                <div class="category-card-actions">
+                    <a class="btn btn-primary" th:href="@{/shop/{shopId}/menu/add/{categoryId}(shopId=${shopId},categoryId=${category.categoryId})}">メニューを追加</a>
+                    <form method="post" class="category-delete-form"
+                          th:action="@{/shop/{shopId}/category/delete/{categoryId}(shopId=${shopId},categoryId=${category.categoryId})}"
+                          onsubmit="return confirmCategoryDelete(this);">
+                        <input type="hidden" name="password">
+                        <button type="submit" class="btn btn-danger">カテゴリを削除</button>
+                    </form>
+                </div>
+            </div>
+            <p class="empty-message" th:if="${#lists.isEmpty(menusByCategory.get(category.categoryId))}">このカテゴリにはまだメニューが登録されていません。</p>
+            <div class="menu-grid" th:if="${!#lists.isEmpty(menusByCategory.get(category.categoryId))}">
+                <a class="menu-card" th:each="menu : ${menusByCategory.get(category.categoryId)}"
+                   th:href="@{/shop/{shopId}/menu/{menuId}(shopId=${shopId},menuId=${menu.menuId})}">
+                    <img class="menu-card-image"
+                         th:src="@{${menu.imagePath != null} ? ${menu.imagePath} : '/images/allergens/画像なし.png'}"
+                         alt="">
+                    <div class="menu-card-body">
+                        <div class="menu-card-name" th:text="${menu.menuName}"></div>
+                        <div class="menu-card-price" th:text="${menu.price} + '円'"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="button-group-footer">
+        <form method="get" th:action="@{/shop/login}">
+            <input class="btn btn-warning" type="submit" value="ログアウト">
+        </form>
+        <form method="get" th:action="@{/shop/{shopId}/delete/confirm(shopId=${shopId})}">
+            <input class="btn btn-danger" type="submit" value="退会">
+        </form>
+    </div>
+</div>
+
+<script>
+    function showCategory(categoryId) {
+        document.querySelectorAll('.tab-button').forEach(function (btn) {
+            btn.classList.toggle('active', btn.dataset.categoryId === String(categoryId));
+        });
+        document.querySelectorAll('.category-panel').forEach(function (panel) {
+            panel.classList.toggle('active', panel.dataset.categoryId === String(categoryId));
+        });
+    }
+
+    function confirmCategoryDelete(form) {
+        if (!confirm('このカテゴリを削除しますか？カテゴリ内の全メニューも削除されます。')) {
+            return false;
+        }
+        const password = prompt('確認のため、店舗パスワードを入力してください:');
+        if (password === null || password === '') {
+            return false;
+        }
+        form.querySelector('input[name="password"]').value = password;
+        return true;
+    }
+</script>
+</body>
+</html>

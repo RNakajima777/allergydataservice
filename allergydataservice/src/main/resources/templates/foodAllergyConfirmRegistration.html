@@ -126,8 +126,8 @@
         <label>コンタミの可否:</label>
         <span th:if="${allergicReactionForm.contamination == 1}">OK</span>
         <span th:if="${allergicReactionForm.contamination == 2}">NG</span>
-        <span th:if="${allergicReactionForm.contamination == 0}">不明</span>
-        <span th:if="${allergicReactionForm.contamination == 9}">どちらともいえない</span>
+        <span th:if="${allergicReactionForm.contamination == 0}">要確認</span>
+        <span th:if="${allergicReactionForm.contamination == 9}">要確認</span>
         <input type="hidden" th:field="*{contamination}">
       </div>
 

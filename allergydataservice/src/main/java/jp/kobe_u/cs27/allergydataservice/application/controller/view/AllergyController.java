@@ -99,11 +99,11 @@ public class AllergyController {
         "uid",
         uid);
 
-    List<String> mainSpecificAllergenicIngredients = Arrays.asList("卵", "牛乳", "小麦", "クルミ", "ピーナッツ", "エビ", "カニ", "そば");
+    List<String> mainSpecificAllergenicIngredients = Arrays.asList("卵", "牛乳", "小麦", "クルミ", "ピーナッツ", "エビ", "カニ", "そば", "カシューナッツ");
     model.addAttribute("mainSpecialAllergens", allergenService.getSpecialAllergen(mainSpecificAllergenicIngredients));
-    
+
     //List<String> otherSpecificAllergenicIngredients = Arrays.asList("アーモンド", "アワビ", "イカ", "イクラ", "オレンジ", "カシューナッツ", "キウイ", "牛肉", "ごま", "サケ", "サバ", "大豆", "鶏肉", "バナナ", "豚肉", "マカダミアナッツ", "桃", "山芋", "リンゴ", "ゼラチン");
-    List<String> otherSpecificAllergenicIngredients = Arrays.asList("アーモンド", "カシューナッツ", "マカダミアナッツ", "ごま", "大豆", "山芋", "アワビ", "イカ", "イクラ", "サケ", "サバ", "牛肉", "豚肉", "鶏肉", "オレンジ", "キウイ", "リンゴ", "バナナ", "モモ", "ゼラチン");
+    List<String> otherSpecificAllergenicIngredients = Arrays.asList("アーモンド", "ピスタチオ", "マカダミアナッツ", "ごま", "大豆", "山芋", "アワビ", "イカ", "イクラ", "サケ", "サバ", "牛肉", "豚肉", "鶏肉", "オレンジ", "キウイ", "リンゴ", "バナナ", "モモ", "ゼラチン");
     model.addAttribute("otherSpecialAllergens", allergenService.getSpecialAllergen(otherSpecificAllergenicIngredients));
 
     model.addAttribute("nikuAllergens", allergenService.getAllergenByFoodFamily("肉類"));
@@ -304,6 +304,11 @@ public class AllergyController {
     form.setAllergenid(allergy.getAllergenid());
     form.setAllergenNameByUser(allergy.getAllergenNameByUser());
     form.setContamination(allergy.getContamination());
+    if(allergy.getContamination() == 9){
+        form.setContamination(0);
+    } else {
+        form.setContamination(allergy.getContamination());
+    }
     form.setQuantity(allergy.getQuantity());
     form.setProducingArea(allergy.getProducingArea());
     form.setAnaExperience(allergy.getAnaExperience());
